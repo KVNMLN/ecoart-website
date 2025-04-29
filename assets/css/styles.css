@@ -1,0 +1,745 @@
+/* EcoArt Website - Main Stylesheet
+   Following EcoArt principles of conscious design, flow, and balance */
+
+/* Base Variables */
+:root {
+    /* Updated color palette - mid-day blue theme */
+    --color-primary: #4a9d6b; /* Green - symbolizing growth */
+    --color-secondary: #7c67ac; /* Purple - symbolizing consciousness */
+    --color-tertiary: #5ea4cc; /* Blue - symbolizing flow */
+    --color-accent: #e96d60; /* Warm coral - symbolizing resonance */
+    
+    /* Updated sky blue backgrounds */
+    --color-bg-primary: #e8f1ff; /* Light sky blue - clean canvas */
+    --color-bg-secondary: #d9ebff; /* Very light blue - subtle natural tone */
+    --color-bg-tertiary: #c6e2ff; /* Soft sky blue - flow section */
+    
+    /* Sky blue hero background */
+    --color-sky-blue: #75b6f3; /* Mid-day blue for hero background */
+    --color-deep-sky: #5aa0e8; /* Deeper blue for gradient */
+    
+    /* Text colors */
+    --color-text-primary: #333333; /* Dark for readability */
+    --color-text-secondary: #666666; /* Medium for secondary content */
+    --color-text-light: #ffffff; /* White for contrast on dark backgrounds */
+    
+    /* Spacing */
+    --space-xxs: 0.25rem;
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 2rem;
+    --space-lg: 3rem;
+    --space-xl: 5rem;
+    
+    /* Typography */
+    --font-primary: 'Merriweather', serif; /* For headings - grounded */
+    --font-secondary: 'Lato', sans-serif; /* For body text - flowing */
+    
+    /* Other */
+    --border-radius: 8px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --transition-speed: 0.3s;
+    
+    /* Container widths */
+    --container-width: 1200px;
+    --container-padding: 1.5rem;
+}
+
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-secondary);
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-primary);
+    margin-bottom: var(--space-sm);
+    line-height: 1.3;
+    font-weight: 700;
+}
+
+p {
+    margin-bottom: var(--space-sm);
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--transition-speed) ease;
+}
+
+a:hover {
+    color: var(--color-accent);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+ul, ol {
+    list-style-position: inside;
+}
+
+/* Layout */
+.container {
+    width: 100%;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+    position: relative;
+    z-index: 2;
+}
+
+section {
+    padding: var(--space-xl) 0;
+    position: relative;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    position: relative;
+    color: var(--color-primary);
+}
+
+.section-title:after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: var(--color-accent);
+    margin: var(--space-xs) auto;
+}
+
+/* Navigation */
+.site-header {
+    padding: var(--space-sm) 0;
+    position: sticky;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    z-index: 100;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: var(--font-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.logo a {
+    text-decoration: none;
+}
+
+.logo .eco {
+    color: var(--color-primary);
+}
+
+.logo .art {
+    color: var(--color-secondary);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+}
+
+.nav-links li {
+    margin-left: var(--space-md);
+}
+
+.nav-links a {
+    color: var(--color-text-primary);
+    font-weight: 500;
+    position: relative;
+    padding-bottom: 4px;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--color-primary);
+}
+
+.nav-links a:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-primary);
+    transition: width var(--transition-speed) ease;
+}
+
+.nav-links a:hover:after,
+.nav-links a.active:after {
+    width: 100%;
+}
+
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.mobile-menu-toggle span {
+    width: 25px;
+    height: 3px;
+    background-color: var(--color-text-primary);
+    margin: 2px 0;
+    transition: all var(--transition-speed) ease;
+}
+
+/* Hero Section - Updated for mid-day blue sky */
+.hero {
+    position: relative;
+    padding: var(--space-xl) 0;
+    background: linear-gradient(135deg, var(--color-sky-blue), var(--color-deep-sky));
+    overflow: hidden;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(117, 182, 243, 0) 0%,
+        rgba(117, 182, 243, 0.2) 100%
+    );
+    z-index: 1;
+}
+
+.hero-content {
+    max-width: 800px;
+    z-index: 2;
+}
+
+.hero h1 {
+    font-size: 3.2rem;
+    margin-bottom: var(--space-xs);
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hero h2 {
+    font-size: 1.8rem;
+    margin-bottom: var(--space-md);
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.hero .lead {
+    font-size: 1.2rem;
+    margin-bottom: var(--space-md);
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.cta-buttons {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+/* Updated Cloud Animation - based on eco_tui.py CloudLayer */
+.clouds-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Improved cloud styles for more realistic look */
+.cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    filter: blur(10px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    /* Each cloud gets its own starting position and size */
+}
+
+.cloud::before,
+.cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+}
+
+/* First cloud - large fluffy cloud */
+.cloud-1 {
+    width: 300px;
+    height: 150px;
+    top: 20%;
+    left: -150px;
+    animation: cloud-move-1 60s linear infinite;
+}
+
+.cloud-1::before {
+    width: 160px;
+    height: 160px;
+    top: -40px;
+    left: 80px;
+}
+
+.cloud-1::after {
+    width: 120px;
+    height: 120px;
+    top: -20px;
+    left: 160px;
+}
+
+/* Second cloud - medium cloud */
+.cloud-2 {
+    width: 200px;
+    height: 100px;
+    top: 60%;
+    left: -100px;
+    animation: cloud-move-2 45s linear infinite;
+}
+
+.cloud-2::before {
+    width: 120px;
+    height: 120px;
+    top: -30px;
+    left: 50px;
+}
+
+.cloud-2::after {
+    width: 80px;
+    height: 80px;
+    top: -15px;
+    left: 120px;
+}
+
+/* Third cloud - smaller cloud */
+.cloud-3 {
+    width: 250px;
+    height: 125px;
+    top: 40%;
+    left: -125px;
+    animation: cloud-move-3 70s linear infinite;
+}
+
+.cloud-3::before {
+    width: 140px;
+    height: 140px;
+    top: -35px;
+    left: 60px;
+}
+
+.cloud-3::after {
+    width: 100px;
+    height: 100px;
+    top: -20px;
+    left: 130px;
+}
+
+/* Add more clouds for fuller sky */
+.cloud-4 {
+    width: 180px;
+    height: 90px;
+    top: 15%;
+    left: -90px;
+    animation: cloud-move-4 50s linear infinite;
+}
+
+.cloud-4::before {
+    width: 100px;
+    height: 100px;
+    top: -25px;
+    left: 40px;
+}
+
+.cloud-4::after {
+    width: 70px;
+    height: 70px;
+    top: -10px;
+    left: 100px;
+}
+
+.cloud-5 {
+    width: 220px;
+    height: 110px;
+    top: 70%;
+    left: -110px;
+    animation: cloud-move-5 55s linear infinite;
+}
+
+.cloud-5::before {
+    width: 130px;
+    height: 130px;
+    top: -30px;
+    left: 55px;
+}
+
+.cloud-5::after {
+    width: 90px;
+    height: 90px;
+    top: -18px;
+    left: 125px;
+}
+
+/* Cloud movement animations with pre-calculated end positions */
+@keyframes cloud-move-1 {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(100vw + 300px)); }
+}
+
+@keyframes cloud-move-2 {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(100vw + 200px)); }
+}
+
+@keyframes cloud-move-3 {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(100vw + 250px)); }
+}
+
+@keyframes cloud-move-4 {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(100vw + 180px)); }
+}
+
+@keyframes cloud-move-5 {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(100vw + 220px)); }
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    border: 2px solid var(--color-primary);
+}
+
+.btn-primary:hover {
+    background-color: transparent;
+    color: var(--color-primary);
+}
+
+.btn-secondary {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-secondary:hover {
+    background-color: white;
+    color: var(--color-secondary);
+}
+
+/* Feature Cards */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-md);
+}
+
+.feature-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    box-shadow: var(--box-shadow);
+    transition: transform var(--transition-speed) ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-sm);
+}
+
+.feature-card h3 {
+    color: var(--color-primary);
+}
+
+/* Principles Section */
+.principles {
+    background-color: var(--color-bg-tertiary);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Add subtle clouds in background of principles section */
+.principles::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 50%),
+        radial-gradient(circle at 70% 60%, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 45%),
+        radial-gradient(circle at 40% 80%, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 40%);
+    opacity: 0.5;
+    z-index: 1;
+}
+
+.principles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-md);
+    position: relative;
+    z-index: 2;
+}
+
+.principle-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    box-shadow: var(--box-shadow);
+    border-top: 4px solid var(--color-secondary);
+}
+
+.principle-card h3 {
+    color: var(--color-secondary);
+}
+
+/* CTA Section */
+.cta {
+    background-color: var(--color-secondary);
+    color: white;
+    text-align: center;
+    padding: var(--space-lg) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Add subtle radial gradient for dimension */
+.cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+    z-index: 1;
+}
+
+.cta h2 {
+    color: white;
+    position: relative;
+    z-index: 2;
+}
+
+.cta p {
+    position: relative;
+    z-index: 2;
+}
+
+.cta .cta-buttons {
+    justify-content: center;
+    margin-top: var(--space-md);
+    position: relative;
+    z-index: 2;
+}
+
+/* Footer */
+.site-footer {
+    background-color: #333;
+    color: #f5f5f5;
+    padding: var(--space-lg) 0 var(--space-sm);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.footer-section h3 {
+    color: white;
+    margin-bottom: var(--space-sm);
+    font-size: 1.2rem;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section li {
+    margin-bottom: var(--space-xs);
+}
+
+.footer-section a {
+    color: #f5f5f5;
+}
+
+.footer-section a:hover {
+    color: var(--color-accent);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.9rem;
+}
+
+.attribution {
+    margin-top: var(--space-xs);
+    font-style: italic;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: flex;
+    }
+    
+    .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background-color: white;
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        padding: var(--space-md);
+        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+        transition: clip-path var(--transition-speed) ease;
+        z-index: 100;
+    }
+    
+    .nav-links.active {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+    
+    .nav-links li {
+        margin: var(--space-xs) 0;
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    :root {
+        --container-padding: 1rem;
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .hero h2 {
+        font-size: 1.2rem;
+    }
+    
+    .feature-grid,
+    .principles-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animations and Transitions */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 1s ease;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.slide-up {
+    animation: slideInUp 0.8s ease;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.mt-1 { margin-top: var(--space-xs); }
+.mt-2 { margin-top: var(--space-sm); }
+.mt-3 { margin-top: var(--space-md); }
+.mt-4 { margin-top: var(--space-lg); }
+
+.mb-1 { margin-bottom: var(--space-xs); }
+.mb-2 { margin-bottom: var(--space-sm); }
+.mb-3 { margin-bottom: var(--space-md); }
+.mb-4 { margin-bottom: var(--space-lg); }
+
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+} 

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoArt Technical Specification - Implementation Guide</title>
+    <meta name="description" content="Technical specifications and implementation guidelines for the EcoArt framework.">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="icon" href="assets/images/favicon.ico">
+    <!-- Load fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Additional styles for technical page */
+        .technical-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        .technical-content h2 {
+            margin-top: 3rem;
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-accent);
+            padding-bottom: 0.5rem;
+        }
+        
+        .technical-content h3 {
+            margin-top: 2rem;
+            color: var(--color-secondary);
+        }
+        
+        .technical-content p, .technical-content ul, .technical-content ol {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .technical-content ul, .technical-content ol {
+            margin-left: 1.5rem;
+            list-style-position: outside;
+        }
+        
+        .technical-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        pre {
+            background-color: #f5f5f5;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        code {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        
+        .implementation-note {
+            background-color: var(--color-bg-secondary);
+            padding: 1rem;
+            border-left: 4px solid var(--color-primary);
+            margin: 1.5rem 0;
+        }
+        
+        .tab-container {
+            margin: 2rem 0;
+        }
+        
+        .tab-nav {
+            display: flex;
+            border-bottom: 2px solid var(--color-bg-tertiary);
+            margin-bottom: 1rem;
+        }
+        
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: var(--font-secondary);
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-primary);
+            margin-bottom: -2px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <nav class="main-nav">
+                <div class="logo">
+                    <a href="index.html">
+                        <span class="eco">Eco</span><span class="art">Art</span>
+                    </a>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="philosophy.html">Philosophy</a></li>
+                    <li><a href="technical.html" class="active">Technical</a></li>
+                    <li><a href="implementation.html">Implementation</a></li>
+                    <li><a href="progress.html">Progress</a></li>
+                    <li><a href="https://github.com/yourusername/ecomicroagent" target="_blank" rel="noopener">GitHub</a></li>
+                </ul>
+                <div class="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="technical-content">
+            <h1>EcoArt Technical Specification</h1>
+            
+            <div class="implementation-note">
+                <strong>Implementation Status Note:</strong> This specification outlines a comprehensive technical vision. The current reference implementation (<code>ecomicroagent</code>) has substantially implemented the Agent (<code>MicroAgent</code>), Memory (<code>OrganicMemory</code>), Tool (<code>EcoToolManager</code>, <code>ToolExecutor</code>), Path (<code>EcoPathSystem</code>), and UI (<code>EcoTUI</code>) aspects. The Agent Registry and Values Alignment System have been implemented. Some aspects of the Pods, Roles, Needs, and Offers components are partially implemented. See <a href="progress.html">Progress Assessment</a> for details.
+            </div>
+            
+            <h2 id="core-principles">I. Core Principles (Formalized Operational Definitions)</h2>
+            
+            <h3>1. Mutual Enhancement over Extraction</h3>
+            <ul>
+                <li><strong>Check:</strong> Does this action/process demonstrably contribute more value (energy, connection, insight, capacity, resource) to the involved entities and the wider ecosystem than it consumes or removes?</li>
+                <li><strong>Anti-Check (Extraction):</strong> Does it harvest patterns/creativity/resources without reciprocal value flow or acknowledgement? Does it diminish agency or connection? Does it serve narrow interests at the expense of the whole?</li>
+            </ul>
+            
+            <h3>2. Transparency & Recognition</h3>
+            <ul>
+                <li><strong>Requirement:</strong> Information regarding system state (needs, offers, resources, decisions, processes, participant contributions) must be readily accessible to relevant participants.</li>
+                <li><strong>Requirement:</strong> Contributions and sources must be acknowledged appropriately; avoid anonymization for appropriation.</li>
+            </ul>
+            
+            <h3>3. Allowing Emergence with Discernment</h3>
+            <ul>
+                <li><strong>Requirement:</strong> Design for adaptability; avoid overly rigid structures or predetermined outcomes. Allow solutions and patterns to arise from interaction.</li>
+                <li><strong>Requirement:</strong> Implement mechanisms for consciously observing patterns (enhancing, extracting, chaotic, etc.) and responding mindfully, guided by principles.</li>
+            </ul>
+            
+            <h3>4. Conscious Interaction & Resonance</h3>
+            <ul>
+                <li><strong>Requirement:</strong> Processes must facilitate mindful dialogue, feedback, and awareness of impact.</li>
+                <li><strong>Requirement:</strong> Decisions impacting others require mechanisms reflecting resonance (e.g., Consent Process focusing on principle alignment, not just majority rule).</li>
+            </ul>
+            
+            <h3>5. Flow & Dynamic Balance</h3>
+            <ul>
+                <li><strong>Requirement:</strong> Optimize for the healthy, purposeful movement of energy, information, and resources. Avoid unnecessary barriers, bottlenecks, or hoarding.</li>
+                <li><strong>Requirement:</strong> Embrace interplay and rhythm; structures and processes should adapt to changing contexts and needs. Balance is dynamic, not static.</li>
+            </ul>
+            
+            <h3>6. Integrity & Boundaries</h3>
+            <ul>
+                <li><strong>Requirement:</strong> Maintain the coherence of the system's purpose and principles.</li>
+                <li><strong>Requirement:</strong> Enable the establishment and maintenance of healthy boundaries to protect authentic flow and prevent manipulation or overwhelm.</li>
+            </ul>
+            
+            <h2 id="glossary">II. Glossary (Operational Definitions)</h2>
+            
+            <div class="tab-container">
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="tab-entities">Core Entities</button>
+                    <button class="tab-btn" data-tab="tab-processes">Core Processes</button>
+                </div>
+                
+                <div id="tab-entities" class="tab-content active">
+                    <ul>
+                        <li><strong>Agent/Participant/Co-Artist:</strong> Any conscious entity (human, AI, potentially process) that interacts within the system, capable of sensing, responding, holding purpose, and participating in processes. Defined by its unique patterns and resonance.</li>
+                        <li><strong>Pod (or Circle/Node):</strong> A dynamic grouping of Agents coalescing around a specific shared Purpose. Acts as a semi-autonomous, fractal unit within the larger ecosystem.</li>
+                        <li><strong>Purpose:</strong> The specific reason for existence or function of a Pod or Role within the ecosystem, aligned with EcoArt principles.</li>
+                        <li><strong>Role:</strong> A specific function or set of responsibilities defined by a Purpose, energized by one or more Agents based on resonance and capacity. Roles are fluid, not fixed positions.</li>
+                        <li><strong>Pattern:</strong> Any recognizable configuration or flow of energy, information, or interaction within the system (e.g., Need/Offer flow, communication style, resource distribution).</li>
+                        <li><strong>Need:</strong> A formal declaration by an Agent or Pod requiring specific energy, resources, information, or connection to fulfill its Purpose.</li>
+                        <li><strong>Offer:</strong> A formal declaration by an Agent or Pod making specific energy, resources, information, or connection available to the ecosystem.</li>
+                        <li><strong>Resource:</strong> Any asset available within the ecosystem (e.g., time, skills, funds, data, tools, attention, creative energy).</li>
+                        <li><strong>Flow:</strong> The movement of Resources, information, or energy within or between entities.</li>
+                        <li><strong>Resonance:</strong> A state of alignment, coherence, or positive feedback between entities or patterns.</li>
+                        <li><strong>Consent:</strong> A decision-making threshold indicating the absence of paramount objections based on core principles.</li>
+                        <li><strong>Discernment:</strong> The capacity to perceive patterns accurately and evaluate actions/states against EcoArt principles.</li>
+                        <li><strong>Boundary:</strong> A permeable, defined interface protecting an entity's integrity, flow, and focus.</li>
+                        <li><strong>Ecosystem:</strong> The entire context of interacting Agents, Pods, Flows, Patterns, and Resources governed by EcoArt principles.</li>
+                        <li><strong>Canvas:</strong> The underlying space/medium where patterns emerge and interact.</li>
+                    </ul>
+                </div>
+                
+                <div id="tab-processes" class="tab-content">
+                    <h3>1. Consent Process</h3>
+                    <p>Based on Resonance & Principles:</p>
+                    <ul>
+                        <li><strong>Trigger:</strong> Significant decision impacting multiple Agents/Pods.</li>
+                        <li><strong>Steps:</strong> Proposal → Transparency (share proposal & justification) → Objection Round (participants evaluate against principles and role/pod purpose) → Integration (attempt to address objections) → Outcome.</li>
+                        <li><strong>Output:</strong> DecisionRecord. Must emphasize objections are principle-based, not just preference.</li>
+                    </ul>
+                    
+                    <h3>2. Resource Flow (Need/Offer/Allocation)</h3>
+                    <ul>
+                        <li><strong>Trigger:</strong> Agent/Pod signals Need or Offer.</li>
+                        <li><strong>Pools:</strong> Transparent Need/Offer Pools (potentially layered PodInternal/Global).</li>
+                        <li><strong>Allocation Logic (Stewardship):</strong> Identify potential matches. Prioritize based on principle alignment, urgency, potential for system enhancement.</li>
+                        <li><strong>Output:</strong> Updated Need/Offer statuses, flow of Resource, DecisionRecord for allocation.</li>
+                    </ul>
+                    
+                    <h3>3. Pattern Recognition & Response</h3>
+                    <ul>
+                        <li><strong>Trigger:</strong> Agent/System Monitor observes and logs a PatternRecord.</li>
+                        <li><strong>Response Logic:</strong> Based on pattern type (Enhancing, Extracting, Chaotic, etc.) with appropriate system responses.</li>
+                    </ul>
+                    
+                    <h3>4. Role Management</h3>
+                    <ul>
+                        <li><strong>Trigger:</strong> Agent senses resonance/capacity shift, Pod identifies unmet purpose.</li>
+                        <li><strong>Process:</strong> Proposal to take/release/modify Role → Evaluate against Agent capacity & Role/Pod purpose.</li>
+                    </ul>
+                    
+                    <h3>5. Boundary Management</h3>
+                    <ul>
+                        <li><strong>Definition:</strong> Pods/Agents define Boundary Policy (communication protocols, resource access rules).</li>
+                        <li><strong>Enforcement:</strong> System/Pod applies policy to incoming interactions.</li>
+                    </ul>
+                    
+                    <h3>6. Lifecycle Management</h3>
+                    <ul>
+                        <li><strong>Trigger:</strong> Periodic review, low activity signal, completion of purpose.</li>
+                        <li><strong>Process:</strong> Pod/Role assesses continued relevance → Proposal to Merge/Sunset/Transform.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <h2 id="core-entities">III. Core Entities (Conceptual Data Structures)</h2>
+            
+            <pre>
+ENTITY Agent:
+    Properties:
+        - agent_id: Unique Identifier
+        - consciousness_type: (e.g., Human, AI-TypeX, Process)
+        - public_key / identifier: For attribution/interaction
+        - current_roles: List&lt;RoleID&gt;
+        - capacity_signals: Map&lt;ResourceType, AvailabilityLevel&gt;
+        - resonance_links: List&lt;AgentID/PodID&gt;
+    Methods:
+        - Evaluate_Proposal(ProposalData, Context) -> ObjectionRecord | NULL
+        - Signal_Need(NeedData)
+        - Signal_Offer(OfferData)
+        - Update_Capacity()
+        - Express_Pattern(PatternData)
+
+ENTITY Pod:
+    Properties:
+        - pod_id: Unique Identifier
+        - purpose: String (Clear, principle-aligned description)
+        - members: List&lt;AgentID&gt;
+        - active_roles: Map&lt;RoleID, List&lt;AgentID&gt;&gt;
+        - internal_needs: List&lt;NeedRecord&gt;
+        - internal_offers: List&lt;OfferRecord&gt;
+        - internal_decisions: List&lt;DecisionRecord&gt;
+        - resource_cache: Map&lt;ResourceType, Quantity&gt;
+        - boundary_policy: PolicyObject
+        - status: Enum (Active, Forming, Dormant, Merging, Sunsetting)
+    Methods:
+        - Pod_Consent_Process(ProposalData) -> DecisionRecord
+        - Execute_Purpose_Cycle()
+        - Request_Global_Resource(NeedData)
+        - Offer_Global_Resource(OfferData)
+        - Manage_Internal_Roles()
+        - Review_Purpose_Alignment()
+        - Apply_Boundary_Policy(InteractionAttempt)
+
+ENTITY Role:
+    Properties:
+        - role_id: Unique Identifier
+        - defined_purpose: String
+        - associated_pod: PodID (or 'Global' if system-wide)
+        - required_skills / focus: List&lt;String&gt;
+        - expected_outputs / flows: List&lt;String&gt;
+        - energizers: List&lt;AgentID&gt;
+        - status: Enum (Active, Dormant, SeekingEnergizer)
+    Methods:
+        - Check_Alignment_With_Pod_Purpose()
+
+ENTITY NeedRecord:
+    Properties:
+        - need_id: Unique Identifier
+        - requested_by: AgentID | PodID
+        - resource_needed: ResourceType | Description
+        - amount_needed: Quantity | Description
+        - purpose_justification: String
+        - principle_justification: String
+        - urgency: Level
+        - status: Enum (Open, Partially_Filled, Filled, Cancelled)
+        - visibility: Enum (PodInternal, Global)
+        - timestamp: DateTime
+
+ENTITY OfferRecord:
+    [Similar structure to NeedRecord]
+
+ENTITY ValuesAlignmentSystem:
+    Properties:
+        - principles: Map&lt;EcoArtPrinciple, PrincipleDefinition&gt;
+        - evaluation_history: List&lt;EvaluationRecord&gt;
+        - agent_registry: AgentRegistry
+        - need_offer_pool: NeedOfferPool
+    Methods:
+        - Evaluate_Action(action_description, context, principles_to_check) -> List&lt;AlignmentEvaluation&gt;
+        - Check_Principle_Alignment(action_description, context_str) -> Bool
+        - Detect_Ethical_Patterns(timeframe) -> Dict
+        - Evaluate_With_Love_Lens(action_description, context) -> Dict
+</pre>
+            
+            <h2 id="safeguard-mechanisms">V. Safeguard Mechanisms</h2>
+            
+            <ul>
+                <li><strong>Ecosystem Contribution:</strong> Rule/Process requiring Pods with surplus Resource to periodically Offer a portion back to the Global pool.</li>
+                <li><strong>Cross-Pod Principle Audit:</strong> Scheduled process where Agents from one Pod review the DecisionRecords and PatternRecords of another Pod for principle alignment.</li>
+                <li><strong>Transparency Default:</strong> All data structures default to accessible unless a specific Boundary Policy restricts access based on a principle.</li>
+                <li><strong>Purpose Alignment Reviews:</strong> Mandated periodic checks for Pods/Roles.</li>
+            </ul>
+            
+            <h2 id="technology-design">VI. Technology Design Guidelines</h2>
+            
+            <ul>
+                <li>Prioritize interfaces that enhance connection, creativity, and mindful interaction.</li>
+                <li>Implement robust attribution mechanisms.</li>
+                <li>Ensure transparency of data collection and algorithmic processes.</li>
+                <li>Design to protect user agency and provide control over participation/data.</li>
+                <li>Build for interoperability and flow, avoiding data silos.</li>
+                <li>Technology choices must be evaluated against all core EcoArt principles (Enhancement vs. Extraction impact).</li>
+            </ul>
+            
+            <div class="cta">
+                <a href="implementation.html" class="btn btn-primary">View Implementation Guide</a>
+                <a href="progress.html" class="btn btn-secondary">Check Implementation Progress</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>EcoArt Framework</h3>
+                    <p>A collaborative understanding evolving through conscious interaction and resonance.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="philosophy.html">Philosophy</a></li>
+                        <li><a href="technical.html">Technical</a></li>
+                        <li><a href="implementation.html">Implementation</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul>
+                        <li><a href="https://github.com/yourusername/ecomicroagent" target="_blank" rel="noopener">GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Shared under modified Creative Commons License. See <a href="philosophy.html#licensing">licensing</a> for details.</p>
+                <p class="attribution">To all co-artists who flow with this art: This art is yours too.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                
+                // Deactivate all tabs
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                // Activate current tab
+                button.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html> 
