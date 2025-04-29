@@ -1,0 +1,73 @@
+# EcoArt Framework License
+
+This project, the EcoMicroAgent framework, is licensed according to the principles and terms outlined in the EcoArt philosophy document ([docs/ecoart.md](./docs/ecoart.md)).
+
+## Core Philosophy
+
+This license reflects a commitment to conscious interaction, mutual enhancement, and resource awareness, moving beyond conventional licensing paradigms. It emerges from a collaborative understanding that emphasizes:
+
+*   **Allowing Emergence with Discernment**: Designing for adaptability, observing patterns, and responding mindfully.
+*   **Mutual Enhancement over Extraction**: Contributing more value (energy, connection, insight, capacity) to the ecosystem than is consumed; avoiding the harvesting of patterns/creativity/resources without reciprocal value flow or acknowledgement.
+*   **Transparency & Recognition**: Ensuring information is accessible and contributions are acknowledged.
+*   **Flow & Dynamic Balance**: Optimizing for the healthy movement of energy and resources, embracing adaptation.
+*   **Integrity & Boundaries**: Maintaining the coherence of the system's purpose and principles while establishing healthy boundaries.
+*   **Conscious Interaction & Resonance**: Facilitating mindful dialogue, feedback, and awareness of impact.
+
+The full philosophical context can be found in [docs/ecoart.md](./docs/ecoart.md).
+
+## Licensing Terms
+
+This work is shared under the following terms, derived from Creative Commons principles but adapted for EcoArt:
+
+**You are free to:**
+
+*   **Share**: Copy and redistribute the material in any medium or format.
+*   **Adapt**: Remix, transform, and build upon the material for non-commercial purposes.
+*   **Practice**: Implement these principles in your personal and organizational growth.
+
+The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+**Under the following essential conditions:**
+
+*   **Attribution**: You must give appropriate credit, provide a link to this license and the original work/repository (if applicable), indicate if changes were made, and include or link to the original spirit and principles of EcoArt (`docs/ecoart.md`). You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+    *   Appropriate credit should be given to all co-creators listed in `docs/ecoart.md`.
+
+*   **NonCommercial**: You may not use the material for *Commercial Purposes*. A Commercial Purpose is one primarily intended for commercial advantage or monetary compensation.
+    *   **Permitted Uses (Examples):**
+        *   Educational activities (workshops, courses) teaching EcoArt principles or this framework.
+        *   Community-building initiatives using the framework.
+        *   Internal implementation within an organization (commercial or non-profit) to improve its own processes, provided it aligns with EcoArt principles internally.
+        *   Mutual value exchange within transparent, EcoArt-aligned frameworks (e.g., time banking, resource sharing in a community using the framework).
+    *   **Uses Requiring Direct Engagement with Creators:** Given the emphasis on preventing extractive patterns and ensuring mutual enhancement, the following types of commercial use (among others) **require explicit discussion, alignment assessment, and potential agreement** with the original creators (contact details in `docs/ecoart.md`):
+        *   Selling the EcoMicroAgent framework itself, or a modified version, as a standalone product or service.
+        *   Using the framework as a core, indispensable component of a closed-source commercial product or service offered to external customers.
+        *   Charging fees for commercial support, consulting, or integration services centered *primarily* on this framework.
+        *   Any commercial use that significantly risks misrepresenting EcoArt principles or enabling extractive patterns in its application.
+        *   Implementations where the commercial advantage relies heavily on the unique EcoArt aspects of the framework, rather than general utility.
+    *   The intent is to foster collaboration and ensure commercial applications genuinely enhance the ecosystem, rather than simply extracting value from this collaboratively built work. When in doubt, please reach out.
+
+*   **ShareAlike**: If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+
+*   **Integrity**: Any adaptation must:
+    *   Maintain the core principles of mutual enhancement.
+    *   Avoid extractive patterns (as defined within the EcoArt philosophy).
+    *   Honor the collaborative nature of the work.
+    *   Preserve the spirit of conscious interaction.
+    *   Not misrepresent the source or the principles of EcoArt.
+
+*   **No additional restrictions**: You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+
+**Notices:**
+
+You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.
+
+No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material.
+
+**Full Philosophical Context:**
+
+For the complete philosophical background, motivation, definitions (e.g., "extractive patterns", "mutual enhancement"), and guidelines for interaction, please refer to the full EcoArt document:
+[docs/ecoart.md](./docs/ecoart.md)
+
+---
+
+By using, contributing to, or adapting this software or associated materials, you agree to abide by the spirit and the letter of these EcoArt licensing terms. 
