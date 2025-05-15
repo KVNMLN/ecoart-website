@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<!--
+EcoArt CA Mk5 - "Chaos-Order-Composing" Model (CA11.1 - Batch 1)
+Objective: Setup new states (COMPOSING, ORDER), rename RIGID.
+           Implement VOID -> CHAOTIC as sole spontaneous emergence from VOID.
+           Update config and meta-slider mappings for these initial changes.
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoArt CA Mk5 - COC Model (CA11.1 - Batch 1)</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        /* CSS (Same as CA10 - no changes in this batch) */
+        body { margin: 0; overflow: hidden; background-color: #111; color: #eee; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; display: flex; flex-direction: column; height: 100vh; } /* MODIFIED */
+        #simulation-main-area { display: flex; flex-grow: 1; overflow: hidden; } /* NEW */
+        #canvas-container { flex-grow: 1; position: relative; }
+        canvas { display: block; }
+        #controls-legend-panel { width: 300px; padding: 15px; background-color: #222; border-left: 1px solid #444; height: 100%; /* MODIFIED */ overflow-y: auto; box-sizing: border-box; }
+        #controls-legend-panel h2, #controls-legend-panel h3 { margin-top: 0; font-size: 1.2em; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        #controls-legend-panel h3 { margin-top: 20px; font-size: 1.1em; }
+        .control-group label { display: block; margin-bottom: 3px; font-size: 0.9em; margin-right: 8px; border-radius: 3px; }
+        .control-group label small { display: block; font-size: 0.8em; opacity: 0.7; margin-top: 2px; }
+        .control-group input[type="range"], .control-group button { width: calc(100% - 10px); margin-bottom: 10px; padding: 5px; box-sizing: border-box; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 5px; font-size: 0.85em; }
+        .legend-color-swatch { width: 15px; height: 15px; border: 1px solid #555; margin-right: 8px; border-radius: 3px; }
+        #live-config-dashboard .config-item { margin-bottom: 8px; padding: 5px; border: 1px solid #333; border-radius: 4px; font-size: 0.85em; }
+        #live-config-dashboard .config-item label { display: block; font-weight: bold; font-size: 0.9em; margin-bottom: 3px; word-wrap: break-word; }
+        #live-config-dashboard .live-param-input { width: calc(60% - 10px); margin-right: 5px; padding: 3px; font-size: 0.9em; border: 1px solid #555; background-color: #1a1a1a; color: #ddd; border-radius: 3px; }
+        #live-config-dashboard .live-param-input.overridden-param { background-color: #3a3a2a; border-color: #776; }
+        #live-config-dashboard .meta-driven-value { font-size: 0.85em; opacity: 0.7; display: inline-block; width: calc(40% - 70px); margin-right: 5px; }
+        #live-config-dashboard .reset-param-to-meta { padding: 3px 5px; font-size: 0.8em; background-color: #444; color: #eee; border: 1px solid #666; border-radius: 3px; cursor: pointer; float: right; }
+        #live-config-dashboard .reset-param-to-meta:hover { background-color: #555; }
+        #system-metrics-display .metric-item { margin-bottom: 6px; font-size: 0.85em; }
+        #system-metrics-display .metric-label { font-weight: normal; margin-right: 5px; }
+        #system-metrics-display .metric-value { font-weight: bold; display: inline-block; width: auto; min-width: 80px; }
+        #system-metrics-display .metric-bar-container { width: 100%; height: 10px; background-color: #333; border-radius: 3px; margin-top: 2px; overflow: hidden; }
+        #system-metrics-display .metric-bar { height: 100%; border-radius: 2px; transition: width 0.2s ease-out; }
+    </style>
+</head>
+<body>
+    <!-- Header and Navigation -->
+    <header class="site-header">
+        <div class="container">
+            <nav class="main-nav">
+                <div class="logo">
+                    <a href="index.html"><span class="eco">Eco</span><span class="art">Art</span></a>
+                </div>
+                <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="philosophy.html">Philosophy</a></li>
+                    <li><a href="technical.html">Technical</a></li>
+                    <li><a href="ecoart_framework.html">EcoArt Framework</a></li>
+                    <li><a href="ca_framework.html">CA Framework</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="implementation.html">Implementation</a></li>
+                    <li><a href="CA11.1.html" class="active">CA11.1 Sim</a></li>
+                    <li><a href="license.html">License</a></li>
+                    <li><a href="https://github.com/KVNMLN/ecoart-website" target="_blank" rel="noopener">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div id="simulation-main-area"> <!-- NEW WRAPPER -->
+        <div id="canvas-container">
+            <canvas id="ecoart-canvas-mk5"></canvas> <!-- New Canvas ID for CA11 -->
+        </div>
+        <div id="controls-legend-panel">
+            <h2>EcoArt CA Controls (CA11.1)</h2>
+            <!-- Controls HTML (Same as CA10 - no changes in this batch) -->
+            <h3>Meta Controls (Virtues & Mechanisms)</h3>
+            <div class="control-group">
+                <label for="respectSlider">System Respect <small>(Resonance, Boundaries, Enhancing Flow)</small>: <span id="respectValue">50</span></label>
+                <input type="range" id="respectSlider" min="0" max="100" value="50">
+            </div>
+            <div class="control-group">
+                <label for="patienceSlider">System Patience <small>(Resilience to Extraction, Extractive Defense, Endurance)</small>: <span id="patienceValue">50</span></label>
+                <input type="range" id="patienceSlider" min="0" max="100" value="50">
+            </div>
+            <div class="control-group">
+                <label for="kindnessSlider">System Kindness <small>(Cyclical Renewal, Adaptability, Fertile Void)</small>: <span id="kindnessValue">50</span></label>
+                <input type="range" id="kindnessSlider" min="0" max="100" value="50">
+            </div>
+            <h3>Simulation Speed & Display</h3>
+            <div class="control-group"> <button id="pausePlayButton">Pause</button> </div>
+            <div class="control-group"> <label for="fpsSlider">Target FPS: <span id="fpsValue">10</span></label> <input type="range" id="fpsSlider" min="1" max="60" value="10"> </div>
+            <div class="control-group"> <label for="cellSizeSlider">Cell Size: <span id="cellSizeValue">15</span>px</label> <input type="range" id="cellSizeSlider" min="5" max="30" value="15"> </div>
+            <div class="control-group"> <button id="resetButton">Reset Simulation</button> </div>
+            <h3>Legend</h3> <div id="legend-container"></div>
+            <h3>Live Rule Configuration</h3> <div id="live-config-dashboard"></div>
+            <h3>System Metrics</h3> <div id="system-metrics-display"></div>
+            <h3>Event Logging</h3>
+            <div class="control-group"> <button id="toggleLoggingButton">Start Logging</button> </div>
+            <div class="control-group"> <button id="exportLogsButton">Export Logs</button> </div>
+        </div>
+    </div> <!-- END #simulation-main-area -->
+
+    <script> // MAIN SCRIPT BLOCK START
+        // --- Constants (CA11.1) ---
+        const ECO_STATES = {
+            VOID: 0,
+            SEED_ENHANCING: 1,
+            FLOW_HARMONIOUS: 2,
+            SEED_EXTRACTIVE: 3,
+            FLOW_EXTRACTIVE: 4,
+            BOUNDARY_HEALTHY: 5, // Active defense
+            COMPOSING: 6,        // Formerly PATTERN_SOLID; general building material/process
+            PATTERN_CHAOTIC: 7,
+            RIGID: 8,            // Formerly BLOCK_RIGID; inert obstruction
+            DECOMPOSING: 9,
+            ORDER: 10            // New state: ultimate stability
+        };
+
+        const STATE_NAMES = {
+            [ECO_STATES.VOID]: "Void (Potential)",
+            [ECO_STATES.SEED_ENHANCING]: "Seed (Enhancing)",
+            [ECO_STATES.FLOW_HARMONIOUS]: "Flow (Harmonious)",
+            [ECO_STATES.SEED_EXTRACTIVE]: "Seed (Extractive)",
+            [ECO_STATES.FLOW_EXTRACTIVE]: "Flow (Extractive)",
+            [ECO_STATES.BOUNDARY_HEALTHY]: "Boundary (Healthy)",
+            [ECO_STATES.COMPOSING]: "Composing (Structure)", // Renamed from Pattern (Solid)
+            [ECO_STATES.PATTERN_CHAOTIC]: "Pattern (Chaotic)",
+            [ECO_STATES.RIGID]: "Rigid (Obstruction)",     // Renamed from Block (Rigid)
+            [ECO_STATES.DECOMPOSING]: "Decomposing",
+            [ECO_STATES.ORDER]: "Order (Stable Form)"      // New
+        };
+
+        const STATE_COLORS = {
+            [ECO_STATES.VOID]: 'hsla(0, 0%, 7%, 0.8)',
+            [ECO_STATES.SEED_ENHANCING]: 'hsla(120, 70%, 70%, 0.7)',
+            [ECO_STATES.FLOW_HARMONIOUS]: 'hsla(140, 80%, 50%, 1)',
+            [ECO_STATES.SEED_EXTRACTIVE]: 'hsla(0, 50%, 60%, 0.6)',
+            [ECO_STATES.FLOW_EXTRACTIVE]: 'hsla(0, 70%, 40%, 0.9)',
+            [ECO_STATES.BOUNDARY_HEALTHY]: 'hsla(200, 70%, 60%, 1)',
+            [ECO_STATES.COMPOSING]: 'hsla(40, 30%, 50%, 1)',         // Same color as old PATTERN_SOLID
+            [ECO_STATES.PATTERN_CHAOTIC]: 'hsla(300, 70%, 60%, 0.7)',
+            [ECO_STATES.RIGID]: 'hsla(0, 0%, 40%, 1)',               // Same color as old BLOCK_RIGID
+            [ECO_STATES.DECOMPOSING]: 'hsla(60, 40%, 30%, 0.8)',
+            [ECO_STATES.ORDER]: 'hsla(50, 100%, 85%, 1)'             // New color: e.g., a stable golden/crystalline
+        };
+
+        const MAX_VITALITY = 100;
+        const MAX_AGE = 100;
+        const INITIAL_VITALITY_BASE_FACTOR = 3;
+        const INITIAL_VITALITY_RANDOM_FACTOR = 2.5;
+        const AGE_FACTOR_DECOMPOSING_TO_VOID = 10;
+        const AGE_FACTOR_SEED_TO_VOID = 5; // Adjusted, seeds should persist a bit longer to mature
+        const MAX_UPDATES_PER_FRAME = 2;
+
+        // --- Global State (Same as CA10) ---
+        let isPaused = false;
+        let targetFPS = 10;
+        let frameInterval = 1000 / targetFPS;
+        let lastFrameTime = 0;
+        let currentCellSize = 15;
+        let globalAnimationFrameId = null;
+        let isTabActive = true;
+        let resizeEventAdded = false;
+        let lastMetricsUpdateTime = 0;
+        const metricsUpdateInterval = 500;
+
+        // --- Logging System (Integrated from CA10.html) ---
+        let isLoggingActive = false;
+        let simulationLogs = [];
+        let logStartTime = 0;
+        let simulationTimeOffset = 0;
+
+        function logEvent(eventType, details = {}) {
+            if (!isLoggingActive) return;
+            const timestamp = (performance.now() - logStartTime + simulationTimeOffset).toFixed(1);
+            const logEntry = { timestamp: parseFloat(timestamp), type: eventType, ...details };
+            simulationLogs.push(logEntry);
+        }
+
+        function toggleLogging() {
+            const toggleButton = safeGetElement('toggleLoggingButton');
+            isLoggingActive = !isLoggingActive;
+            if (isLoggingActive) {
+                toggleButton.textContent = 'Stop Logging';
+                if (simulationLogs.length === 0) { // Fresh start
+                    logStartTime = performance.now();
+                    simulationTimeOffset = 0; // Reset offset if it's a completely new logging session
+                    logEvent('LOGGING_STARTED');
+                } else { // Resuming existing logs
+                    logStartTime = performance.now(); // Reset start time to calculate new elapsed time
+                    logEvent('LOGGING_RESUMED');
+                }
+            } else {
+                toggleButton.textContent = 'Start Logging';
+                simulationTimeOffset += (performance.now() - logStartTime); // Add elapsed time to offset
+                logEvent('LOGGING_STOPPED');
+                // logStartTime is not reset here, as simulationTimeOffset now holds the total time before this stop
+            }
+        }
+
+        function exportLogs() {
+            if (simulationLogs.length === 0) { 
+                alert("No logs to export."); 
+                logEvent('LOGS_EXPORT_NO_DATA');
+                return; 
+            }
+            logEvent('LOGS_EXPORT_REQUESTED', { logCount: simulationLogs.length });
+            const jsonData = JSON.stringify(simulationLogs, null, 2);
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const now = new Date();
+            const timestampStr = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`;
+            a.download = `EcoArtCA_Logs_CA11_${timestampStr}.json`; // Added CA11 to filename
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            logEvent('LOGS_EXPORT_COMPLETED');
+        }
+        // --- End Logging System ---
+
+        // --- Live Configuration State (CA11.1 - With Renamed Params) ---
+        let liveRuleConfig = {
+            flowHarmonious_spreadChanceToSeed: 0.2,
+            flowHarmonious_spreadChanceToVoid: 0.01,
+            flowHarmonious_vitalityGainOnSpread: 0.03,
+            flowHarmonious_naturalVitalityGain: 0.1,
+            seedEnhancing_naturalVitalityGain: 0.6,
+            seedExtractive_naturalVitalityGain: 0.15,
+
+            chaos_transformByHarmonyChance: 0.15,
+            chaotic_harmoniousNeighbors_for_enhancing: 2,
+            chaotic_vitalityThreshold_for_enhancing: 40,
+            chaotic_chance_coalesceToSeedEnhancing: 0.05,
+
+            boundaryHealthy_formationChanceFromHarmonious: 0.2,
+            boundaryHealthy_formationChanceFromSeed: 0.15,
+            boundaryHealthy_effectivenessVsExtractive: 0.2,
+            boundaryHealthy_vitalityGainWhenDefending: 2.0,
+            boundary_vitalityAdvantage_for_neutralize: 1.1,
+            boundary_chance_neutralizeExtractiveNeighbor: 0.04,
+            boundary_vitalityDrain_on_neutralized_extractive: 3,
+            boundary_extractiveVitalityThreshold_for_neutralize_to_decompose: 10, // RENAMED from _for_solid_conversion
+
+            flowHarmonious_vulnerabilityToExtractive: 0.2,
+            harmonious_vitalityThreshold_for_degradation: 15,
+            harmonious_extractiveNeighbors_for_degradation: 3,
+            harmonious_chance_degradeToSeedExtractive: 0.005,
+            harmonious_vitalityThreshold_for_chaos: 10,
+            harmonious_chance_degradeToChaotic: 0.008,
+
+            flowExtractive_successChance: 0.3,
+            flowExtractive_potencyFactor: 0.05,
+            flowExtractive_efficiency: 0.5,
+            flowExtractive_intrinsicDecayRate: 0.02, // NEW PARAMETER
+            flowExtractive_decayWhenIsolatedChance: 0.15,
+            flowExtractive_spreadToVoidChance: 0.005,
+            flowExtractive_spreadToSeedChance: 0.05,
+            
+            extractive_vitalityThreshold_for_conversion: 20,
+            extractive_harmoniousNeighbors_for_conversion: 3,
+            extractive_maxFellowExtractives_for_conversion: 0,
+            extractive_chance_convertToChaotic: 0.03, // RENAMED from _convertToSeedEnhancing
+            extractive_vitalityThreshold_for_boundary: 30,
+            extractive_age_for_boundary_conversion: 50,
+            extractive_chance_convertToBoundary: 0.02,
+            extractive_vitalityThreshold_for_composing: 15,    // RENAMED from _for_solid
+            extractive_age_for_composing_conversion: 67,       // RENAMED from _for_solid_conversion
+            extractive_chance_convertToComposing: 0.01,        // RENAMED from _convertToSolid
+
+            chaos_breakdownRigidChance: 0.1,
+            chaos_breakdownComposingChance: 0.1,  // RENAMED from _breakdownSolidChance
+            chaotic_extractiveNeighbors_for_extractive: 2,
+            chaotic_vitalityThreshold_for_extractive: 30,
+            chaotic_chance_coalesceToSeedExtractive: 0.02,
+
+            agingFactor_composingToRigid: 1.2, // RENAMED from _solidification
+            agingFactor_rigidToDecompose: 1.5, // RENAMED from _rigidity
+            decomposition_speedFactor: 1.5,
+            pattern_chaotic_naturalVitalityFluctuation: 0.4, // ADDED
+
+            void_spontaneousChaosChance_base: 0.005,
+            void_chaosFertilizationFactor_byDecomposing: 1.5,
+            chaotic_intrinsicResolveToEnhancingChance: 0.30,
+            chaotic_intrinsicResolveToExtractiveChance: 0.30,
+
+            composing_naturalVitalityGain_or_Decay: -0.01,
+            composing_to_boundary_chance: 0.05,
+            composing_to_rigid_chance: 0.05,
+            composing_to_order_chance: 0.01,
+            composing_vitality_threshold_for_order: 70,
+            composing_age_threshold_for_order: 50,
+            
+            order_naturalVitalityGain_or_Decay: 0.005,
+            order_breakdownByChaosChance: 0.02,
+            order_maxAgeBeforeDecomposing: MAX_AGE * 3,
+
+            seed_to_composing_chance_enhancing: 0.02,
+            seed_to_composing_chance_extractive: 0.02,
+            flow_to_composing_chance_harmonious: 0.01,
+            flow_to_composing_chance_extractive: 0.01,
+            flow_to_composing_vitality_threshold: 30,
+
+            decomposing_to_composing_chance: 0.05,
+            decomposing_neighbors_for_composing_threshold: 2
+        };
+
+        document.addEventListener('visibilitychange', function() {
+            isTabActive = document.visibilityState === 'visible';
+            if (!isTabActive && !isPaused) {
+                isPaused = true;
+                const pausePlayButton = document.getElementById('pausePlayButton');
+                if (pausePlayButton) { pausePlayButton.textContent = 'Play'; }
+                logEvent('SIMULATION_PAUSED_TAB_INACTIVE');
+            }
+        });
+
+        function safeGetElement(id) {
+            const element = document.getElementById(id);
+            return element;
+        }
+
+        function mapValue(value, inMin, inMax, outMin, outMax) {
+            if (inMin === inMax) { return outMin; }
+            const val = Math.max(inMin, Math.min(inMax, value));
+            return (val - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+        }
+
+        function calculateAllMetaParameterValues(respect, patience, kindness) {
+            let calculatedValues = {};
+
+            calculatedValues.flowHarmonious_spreadChanceToSeed = mapValue(respect, 0, 100, 0.1, 0.3);
+            calculatedValues.flowHarmonious_spreadChanceToVoid = mapValue(respect, 0, 100, 0.01, 0.04);
+            calculatedValues.flowHarmonious_vitalityGainOnSpread = mapValue(respect, 0, 100, 0.02, 0.05);
+            calculatedValues.flowHarmonious_naturalVitalityGain = mapValue(respect, 0, 100, 0.05, 0.15);
+            calculatedValues.seedEnhancing_naturalVitalityGain = mapValue(respect, 0, 100, 0.15, 1.2);
+            calculatedValues.chaos_transformByHarmonyChance = mapValue(respect, 0, 100, 0.1, 0.2);
+            calculatedValues.chaotic_chance_coalesceToSeedEnhancing = mapValue(respect, 0, 100, 0.01, 0.15);
+            calculatedValues.boundaryHealthy_formationChanceFromHarmonious = mapValue(respect, 0, 100, 0.15, 0.25);
+            calculatedValues.boundaryHealthy_formationChanceFromSeed = mapValue(respect, 0, 100, 0.1, 0.2);
+            calculatedValues.boundaryHealthy_effectivenessVsExtractive = mapValue(respect, 0, 100, 0.15, 0.25);
+            calculatedValues.flowHarmonious_vulnerabilityToExtractive = mapValue(respect, 0, 100, 0.25, 0.05);
+            calculatedValues.harmonious_chance_degradeToChaotic = mapValue(respect, 0, 100, 0.03, 0.0005);
+
+            calculatedValues.flowExtractive_successChance = mapValue(patience, 0, 100, 0.5, 0.15);
+            calculatedValues.flowExtractive_potencyFactor = mapValue(patience, 0, 100, 0.08, 0.02);
+            calculatedValues.flowExtractive_efficiency = mapValue(patience, 0, 100, 0.7, 0.25);
+            calculatedValues.flowExtractive_decayWhenIsolatedChance = mapValue(patience, 0, 100, 0.02, 0.35);
+            calculatedValues.boundaryHealthy_vitalityGainWhenDefending = mapValue(patience, 0, 100, 1.0, 5.0);
+            calculatedValues.harmonious_chance_degradeToSeedExtractive = mapValue(patience, 0, 100, 0.05, 0.0001);
+            calculatedValues.extractive_chance_convertToBoundary = mapValue(patience, 0, 100, 0.001, 0.05);
+            calculatedValues.extractive_chance_convertToComposing = mapValue(patience, 0, 100, 0.0005, 0.03); // RENAMED
+            calculatedValues.boundary_vitalityAdvantage_for_neutralize = mapValue(patience, 0, 100, 1.25, 1.05);
+            calculatedValues.boundary_chance_neutralizeExtractiveNeighbor = mapValue(patience, 0, 100, 0.005, 0.1);
+            calculatedValues.flowExtractive_intrinsicDecayRate = mapValue(patience, 0, 100, 0.01, 0.15); // NEW: High Patience = higher intrinsic decay for FLOW_EXTRACTIVE
+            calculatedValues.seedExtractive_naturalVitalityGain = mapValue(patience, 0, 100, 0.25, 0.01);
+
+            calculatedValues.chaos_breakdownRigidChance = mapValue(kindness, 0, 100, 0.05, 0.25);
+            calculatedValues.chaos_breakdownComposingChance = mapValue(kindness, 0, 100, 0.05, 0.25); // RENAMED
+            calculatedValues.agingFactor_composingToRigid = mapValue(kindness, 0, 100, 2.5, 0.8); // RENAMED
+            calculatedValues.agingFactor_rigidToDecompose = mapValue(kindness, 0, 100, 3.0, 1.0); // RENAMED
+            calculatedValues.decomposition_speedFactor = mapValue(kindness, 0, 100, 0.5, 3.0);
+            calculatedValues.extractive_chance_convertToChaotic = mapValue(kindness, 0, 100, 0.0001, 0.08); // RENAMED
+            calculatedValues.pattern_chaotic_naturalVitalityFluctuation = mapValue(kindness, 0, 100, 0.1, 0.5); // ADDED
+
+            if (respect === 100 && patience === 100 && kindness === 100) {
+                calculatedValues.void_spontaneousChaosChance_base = mapValue(kindness, 0, 100, 0.0005, 0.01) * 2.5; // Enhanced chance at max virtues
+            } else if (respect === 0 && patience === 0 && kindness === 0) {
+                calculatedValues.void_spontaneousChaosChance_base = 0; // No spontaneous chaos if all virtues are zero
+            } else {
+                // Normal mapping based on Kindness for intermediate slider settings
+                calculatedValues.void_spontaneousChaosChance_base = mapValue(kindness, 0, 100, 0.0005, 0.01);
+            }
+            calculatedValues.void_chaosFertilizationFactor_byDecomposing = mapValue(kindness, 0, 100, 1.0, 4.0);
+            calculatedValues.chaotic_intrinsicResolveToEnhancingChance = mapValue(respect, 0, 100, 0.05, 0.35);
+            calculatedValues.chaotic_intrinsicResolveToExtractiveChance = mapValue(kindness, 0, 100, 0.35, 0.05); // High Kindness = LOW chance for Extractive
+
+            calculatedValues.composing_to_boundary_chance = mapValue(respect, 0, 100, 0.01, 0.15);
+            calculatedValues.composing_to_rigid_chance = mapValue(patience, 0, 100, 0.10, 0.01);
+            calculatedValues.composing_to_order_chance = mapValue(kindness, 0, 100, 0.001, 0.05);
+            calculatedValues.order_breakdownByChaosChance = mapValue(patience, 0, 100, 0.05, 0.005);
+            calculatedValues.seed_to_composing_chance_enhancing = mapValue(kindness, 0, 100, 0.005, 0.03);
+            calculatedValues.seed_to_composing_chance_extractive = mapValue(kindness, 0, 100, 0.005, 0.03);
+            calculatedValues.flow_to_composing_chance_harmonious = mapValue(kindness, 0, 100, 0.002, 0.02);
+            calculatedValues.flow_to_composing_chance_extractive = mapValue(kindness, 0, 100, 0.002, 0.02);
+            calculatedValues.decomposing_to_composing_chance = mapValue(kindness, 0, 100, 0.01, 0.1);
+
+            // Thresholds (mostly from CA9/CA10 defaults, review if they should be dynamic)
+            calculatedValues.chaotic_harmoniousNeighbors_for_enhancing = liveRuleConfig.chaotic_harmoniousNeighbors_for_enhancing;
+            calculatedValues.chaotic_vitalityThreshold_for_enhancing = liveRuleConfig.chaotic_vitalityThreshold_for_enhancing;
+            calculatedValues.chaotic_extractiveNeighbors_for_extractive = liveRuleConfig.chaotic_extractiveNeighbors_for_extractive;
+            calculatedValues.chaotic_vitalityThreshold_for_extractive = liveRuleConfig.chaotic_vitalityThreshold_for_extractive;
+            calculatedValues.chaotic_chance_coalesceToSeedExtractive = mapValue(respect, 0, 100, 0.08, 0.005) * mapValue(kindness, 0, 100, 1.0, 0.25);
+            calculatedValues.extractive_vitalityThreshold_for_conversion = liveRuleConfig.extractive_vitalityThreshold_for_conversion;
+            calculatedValues.extractive_harmoniousNeighbors_for_conversion = liveRuleConfig.extractive_harmoniousNeighbors_for_conversion;
+            calculatedValues.extractive_maxFellowExtractives_for_conversion = liveRuleConfig.extractive_maxFellowExtractives_for_conversion;
+            calculatedValues.extractive_vitalityThreshold_for_boundary = liveRuleConfig.extractive_vitalityThreshold_for_boundary;
+            calculatedValues.extractive_age_for_boundary_conversion = liveRuleConfig.extractive_age_for_boundary_conversion;
+            calculatedValues.extractive_vitalityThreshold_for_composing = liveRuleConfig.extractive_vitalityThreshold_for_composing; // RENAMED
+            calculatedValues.extractive_age_for_composing_conversion = liveRuleConfig.extractive_age_for_composing_conversion;   // RENAMED
+            calculatedValues.harmonious_vitalityThreshold_for_degradation = liveRuleConfig.harmonious_vitalityThreshold_for_degradation;
+            calculatedValues.harmonious_extractiveNeighbors_for_degradation = liveRuleConfig.harmonious_extractiveNeighbors_for_degradation;
+            calculatedValues.harmonious_vitalityThreshold_for_chaos = liveRuleConfig.harmonious_vitalityThreshold_for_chaos;
+            calculatedValues.boundary_vitalityDrain_on_neutralized_extractive = liveRuleConfig.boundary_vitalityDrain_on_neutralized_extractive;
+            calculatedValues.boundary_extractiveVitalityThreshold_for_neutralize_to_decompose = liveRuleConfig.boundary_extractiveVitalityThreshold_for_neutralize_to_decompose; // RENAMED
+            calculatedValues.flowExtractive_spreadToVoidChance = mapValue(patience, 0, 100, 0.0495, 0.0005);
+            calculatedValues.flowExtractive_spreadToSeedChance = mapValue(patience, 0, 100, 0.30, 0.005);
+
+            return calculatedValues;
+        }
+
+        function updateEcoArtParametersFromMetaSliders() {
+            const respectSlider = safeGetElement('respectSlider');
+            const patienceSlider = safeGetElement('patienceSlider');
+            const kindnessSlider = safeGetElement('kindnessSlider');
+            if (!respectSlider || !patienceSlider || !kindnessSlider) { return; }
+
+            const respect = parseInt(respectSlider.value);
+            const patience = parseInt(patienceSlider.value);
+            const kindness = parseInt(kindnessSlider.value);
+            
+            // These are the values suggested by the sliders before any 0,0,0 absolute overrides
+            const sliderSuggestedValues = calculateAllMetaParameterValues(respect, patience, kindness);
+
+            // Update liveRuleConfig based on sliderSuggestedValues, respecting manual dashboard overrides
+            for (const paramName in sliderSuggestedValues) {
+                if (Object.hasOwnProperty.call(sliderSuggestedValues, paramName) && liveRuleConfig.hasOwnProperty(paramName)) {
+                     const inputField = document.getElementById(`param_${paramName}`);
+                     if (!(inputField && inputField.dataset.overridden === 'true')) { // If NOT manually overridden
+                         liveRuleConfig[paramName] = sliderSuggestedValues[paramName];
+                     }
+                }
+            }
+            
+            // Absolute overrides for the 0,0,0 scenario (these are the FINAL values for liveRuleConfig)
+            if (respect === 0 && patience === 0 && kindness === 0) {
+                 Object.keys(liveRuleConfig).forEach(key => {
+                    if (key.includes('Chance') || (key.includes('Factor') && !key.includes('agingFactor') && !key.includes('potencyFactor') && !key.includes('efficiency') && !key.includes('INITIAL_VITALITY'))) {
+                        liveRuleConfig[key] = 0;
+                    } else if (key.includes('naturalVitalityGain')) {
+                        liveRuleConfig[key] = -5.0;
+                    } else if (key.includes('vitalityGainOnSpread') || key.includes('vitalityGainWhenDefending')) {
+                        liveRuleConfig[key] = 0;
+                    }
+                 });
+                 liveRuleConfig.flowExtractive_successChance = 0;
+                 liveRuleConfig.flowExtractive_potencyFactor = 0.0001;
+                 liveRuleConfig.flowExtractive_efficiency = 0;
+                 liveRuleConfig.decomposition_speedFactor = 0.001; 
+                 liveRuleConfig.void_spontaneousChaosChance_base = 0; 
+                 liveRuleConfig.chaotic_intrinsicResolveToEnhancingChance = 0;
+                 liveRuleConfig.chaotic_intrinsicResolveToExtractiveChance = 0;
+                 liveRuleConfig.seedEnhancing_naturalVitalityGain = -5.0;
+                 liveRuleConfig.seedExtractive_naturalVitalityGain = -5.0;
+                
+                // In 0,0,0 mode, clear all manual overrides on the dashboard
+                Object.keys(liveRuleConfig).forEach(key => {
+                    const inputField = document.getElementById(`param_${key}`);
+                    if (inputField) { 
+                        inputField.dataset.overridden = 'false'; 
+                        inputField.classList.remove('overridden-param');
+                    }
+                });
+            }
+
+            // Update slider value displays in the UI
+            const respectValueEl = safeGetElement('respectValue'); if(respectValueEl) respectValueEl.textContent = respect;
+            const patienceValueEl = safeGetElement('patienceValue'); if(patienceValueEl) patienceValueEl.textContent = patience;
+            const kindnessValueEl = safeGetElement('kindnessValue'); if(kindnessValueEl) kindnessValueEl.textContent = kindness;
+
+            // Update the dashboard input fields to reflect the FINAL liveRuleConfig values
+            // and show what the meta sliders *would* suggest for the (Meta: ...) text.
+            // Pass sliderSuggestedValues for the "(Meta: ...)" display
+            updateDashboardDisplay(sliderSuggestedValues); 
+        }
+
+        function populateLiveConfigDashboard() {
+            const dashboard = safeGetElement('live-config-dashboard');
+            if (!dashboard) return;
+            dashboard.innerHTML = '';
+            const sortedParamNames = Object.keys(liveRuleConfig).sort();
+
+            for (const paramName of sortedParamNames) {
+                if (Object.hasOwnProperty.call(liveRuleConfig, paramName)) {
+                    const initialValue = liveRuleConfig[paramName];
+                    const itemDiv = document.createElement('div'); itemDiv.className = 'config-item';
+                    const label = document.createElement('label'); label.htmlFor = `param_${paramName}`; label.textContent = paramName;
+                    const input = document.createElement('input'); input.type = 'number'; input.id = `param_${paramName}`; input.className = 'live-param-input';
+                    const precision = (Math.abs(initialValue) < 0.001 && initialValue !== 0) ? 6 : (Math.abs(initialValue) < 0.1 && initialValue !== 0) ? 5 : 4;
+                    input.value = initialValue.toFixed(precision);
+                    input.step = (paramName.toLowerCase().includes('chance') || paramName.toLowerCase().includes('factor') || Math.abs(initialValue) < 0.1) ? '0.00001' : '0.01';
+                    if (paramName.toLowerCase().includes('chance') || paramName.toLowerCase().includes('threshold') || paramName.toLowerCase().includes('neighbors') || paramName.toLowerCase().includes('factor')) {
+                         if (!paramName.toLowerCase().includes('gain')) input.min = "0";
+                    }
+
+                    const metaValueSpan = document.createElement('span'); metaValueSpan.id = `param_${paramName}_value_meta`; metaValueSpan.className = 'meta-driven-value';
+                    itemDiv.appendChild(label); itemDiv.appendChild(input); itemDiv.appendChild(metaValueSpan);
+                    const resetButton = document.createElement('button'); resetButton.textContent = 'Reset'; resetButton.title = 'Reset to Meta-Slider value'; resetButton.className = 'reset-param-to-meta'; resetButton.dataset.paramName = paramName;
+                    itemDiv.appendChild(resetButton); dashboard.appendChild(itemDiv);
+
+                    input.addEventListener('input', (e) => {
+                        const newValue = parseFloat(e.target.value);
+                        if (!isNaN(newValue)) {
+                            const oldValue = liveRuleConfig[paramName]; liveRuleConfig[paramName] = newValue;
+                            if (Math.abs(newValue - oldValue) > 1e-7) {
+                                const r = parseInt(document.getElementById('respectSlider').value); const p = parseInt(document.getElementById('patienceSlider').value); const k = parseInt(document.getElementById('kindnessSlider').value);
+                                const cMV = calculateAllMetaParameterValues(r,p,k); const mVTP = cMV[paramName];
+                                logEvent('LIVE_RULE_OVERRIDE', { parameter: paramName, overriddenValue: newValue, previousValue: oldValue.toFixed(precision), metaDrivenValue: mVTP !== undefined ? mVTP.toFixed(precision) : 'N/A' });
+                                e.target.dataset.overridden = 'true'; e.target.classList.add('overridden-param');
+                            }
+                        }
+                    });
+                    resetButton.addEventListener('click', () => {
+                        const r = parseInt(document.getElementById('respectSlider').value); const p = parseInt(document.getElementById('patienceSlider').value); const k = parseInt(document.getElementById('kindnessSlider').value);
+                        const tMV = calculateAllMetaParameterValues(r,p,k); const mVTP = tMV[paramName];
+                        if (typeof mVTP !== 'undefined') {
+                            const prec = (Math.abs(mVTP) < 0.001 && mVTP !== 0) ? 6 : (Math.abs(mVTP) < 0.1 && mVTP !== 0) ? 5 : 4;
+                            input.value = mVTP.toFixed(prec); liveRuleConfig[paramName] = mVTP;
+                            logEvent('LIVE_RULE_RESET_TO_META', { parameter: paramName, metaValue: mVTP.toFixed(prec) });
+                            input.dataset.overridden = 'false'; input.classList.remove('overridden-param'); metaValueSpan.textContent = `(Meta: ${mVTP.toFixed(prec)})`;
+                        }
+                    });
+                }
+            }
+        }
+
+        function updateDashboardDisplay(metaValuesForDisplay) { // Accepts an argument for the "(Meta: ...)" text
+            // const respect = parseInt(document.getElementById('respectSlider').value); // No longer need to read sliders here
+            // const patience = parseInt(document.getElementById('patienceSlider').value);
+            // const kindness = parseInt(document.getElementById('kindnessSlider').value);
+            // const currentMetaValues = calculateAllMetaParameterValues(respect, patience, kindness); // This is now passed in as metaValuesForDisplay
+
+            for (const paramName in liveRuleConfig) { // Iterate over liveRuleConfig (the source of truth for current values)
+                if (Object.hasOwnProperty.call(liveRuleConfig, paramName)) {
+                    const metaDrivenValueForThisParam = metaValuesForDisplay[paramName]; // For the "(Meta: X)" text
+                    
+                    const inputField = document.getElementById(`param_${paramName}`);
+                    const metaSpan = document.getElementById(`param_${paramName}_value_meta`);
+                    
+                    // Precision logic, ensure inputField exists before accessing its properties
+                    let prec = 4; // Default precision
+                    if (inputField) {
+                        const stepValue = parseFloat(inputField.step);
+                        if (!isNaN(stepValue)) {
+                            if (stepValue <= 0.00001) prec = 6;
+                            else if (stepValue <= 0.001) prec = 5;
+                        } else { // Fallback if step is not a number or not set
+                           const liveVal = liveRuleConfig[paramName];
+                           if (Math.abs(liveVal) < 0.001 && liveVal !== 0) prec = 6;
+                           else if (Math.abs(liveVal) < 0.1 && liveVal !== 0) prec = 5;
+                        }
+                    } else { // Fallback if inputField doesn't exist (e.g. during initial setup before dashboard is fully populated)
+                        const liveVal = liveRuleConfig[paramName];
+                        if (Math.abs(liveVal) < 0.001 && liveVal !== 0) prec = 6;
+                        else if (Math.abs(liveVal) < 0.1 && liveVal !== 0) prec = 5;
+                    }
+
+
+                    if (metaSpan && typeof metaDrivenValueForThisParam !== 'undefined') {
+                        // Determine precision for meta value display, similar to input field
+                        let metaPrec = 4;
+                        if (Math.abs(metaDrivenValueForThisParam) < 0.001 && metaDrivenValueForThisParam !== 0) metaPrec = 6;
+                        else if (Math.abs(metaDrivenValueForThisParam) < 0.1 && metaDrivenValueForThisParam !== 0) metaPrec = 5;
+                        metaSpan.textContent = `(Meta: ${metaDrivenValueForThisParam.toFixed(metaPrec)})`;
+                    }
+
+                    if (inputField) {
+                        // Set the input field's value from the finalized liveRuleConfig
+                        inputField.value = liveRuleConfig[paramName].toFixed(prec); 
+                        
+                        // Class for overridden params is now managed by the input's 'input' event listener
+                        // and by the 0,0,0 block in updateEcoArtParametersFromMetaSliders which clears overrides.
+                        // So, we just need to ensure it's correctly styled based on inputField.dataset.overridden
+                        if (inputField.dataset.overridden === 'true') {
+                            inputField.classList.add('overridden-param');
+                        } else {
+                            inputField.classList.remove('overridden-param');
+                        }
+                    }
+                }
+            }
+        }
+
+        function getSystemMetricsSnapshot() {
+            if (!ecoArtGrid || !ecoArtGrid.grid || !ecoArtGrid.cols || !ecoArtGrid.rows || ecoArtGrid.cols <= 0 || ecoArtGrid.rows <= 0) { return null; }
+            const numCells = ecoArtGrid.cols * ecoArtGrid.rows; if (numCells === 0) return null;
+            const stateCounts = {}; for (const stateKey in ECO_STATES) { stateCounts[ECO_STATES[stateKey]] = 0; }
+            let totalVitality = 0;
+            for (let c = 0; c < ecoArtGrid.cols; c++) { for (let r = 0; r < ecoArtGrid.rows; r++) {
+                if (ecoArtGrid.grid[c] && ecoArtGrid.grid[c][r]) {
+                    const cell = ecoArtGrid.grid[c][r];
+                    if (stateCounts[cell.state] !== undefined) { stateCounts[cell.state]++; }
+                    else { if (!stateCounts.hasOwnProperty(cell.state)) { stateCounts[cell.state] = 0; } stateCounts[cell.state]++; }
+                    totalVitality += cell.vitality;
+                }
+            }}
+            const metrics = { numCells: numCells, totalVitality: totalVitality, averageVitality: (numCells > 0 ? totalVitality / numCells : 0).toFixed(2), stateDistribution: {} };
+            for (const stateKey in ECO_STATES) {
+                const stateVal = ECO_STATES[stateKey]; const count = stateCounts[stateVal] || 0;
+                const percentage = (numCells > 0 ? (count / numCells) * 100 : 0);
+                metrics.stateDistribution[STATE_NAMES[stateVal] || `Unknown (${stateVal})`] = { count: count, percentage: percentage.toFixed(1) };
+            }
+             for (const stateVal in stateCounts) {
+                 if (!STATE_NAMES.hasOwnProperty(stateVal) && !Object.values(ECO_STATES).includes(parseInt(stateVal))) {
+                     const count = stateCounts[stateVal]; const percentage = (numCells > 0 ? (count / numCells) * 100 : 0);
+                     metrics.stateDistribution[`Unknown (${stateVal})`] = { count: count, percentage: percentage.toFixed(1) };
+                 }
+             }
+            return metrics;
+        }
+        
+        function calculateAndDisplaySystemMetrics(timestamp) {
+            const now = timestamp || performance.now();
+            if (lastMetricsUpdateTime && (now - lastMetricsUpdateTime < metricsUpdateInterval)) { return; }
+            lastMetricsUpdateTime = now;
+            const metrics = getSystemMetricsSnapshot(); if (!metrics) { return; }
+            const metricsDisplay = safeGetElement('system-metrics-display'); if (!metricsDisplay) return;
+
+            if (metricsDisplay.children.length === 0 || !metricsDisplay.querySelector('[data-state-name]') || metricsDisplay.dataset.builtFor !== Object.keys(ECO_STATES).join(',')) {
+                metricsDisplay.innerHTML = ''; 
+                const sortedStateEntries = Object.entries(ECO_STATES).sort(([, valA], [, valB]) => valA - valB);
+
+                for (const [stateKey, stateValue] of sortedStateEntries) {
+                    const stateName = STATE_NAMES[stateValue]; 
+                    if (!stateName) continue; 
+
+                    const mI = document.createElement('div'); mI.className = 'metric-item'; mI.setAttribute('data-state-name', stateName);
+                    const lbl = document.createElement('span'); lbl.className = 'metric-label'; lbl.textContent = `${stateName}: `;
+                    const valD = document.createElement('span'); valD.className = 'metric-value'; valD.setAttribute('data-value-for-name', stateName);
+                    const barC = document.createElement('div'); barC.className = 'metric-bar-container';
+                    const bar = document.createElement('div'); bar.className = 'metric-bar'; bar.setAttribute('data-bar-for-name', stateName);
+                    bar.style.backgroundColor = STATE_COLORS[stateValue] || '#888'; 
+                    barC.appendChild(bar); mI.appendChild(lbl); mI.appendChild(valD); mI.appendChild(barC); metricsDisplay.appendChild(mI);
+                }
+                metricsDisplay.dataset.builtFor = Object.keys(ECO_STATES).join(',');
+
+                const avgVI = document.createElement('div'); avgVI.className = 'metric-item';
+                const avgVLbl = document.createElement('span'); avgVLbl.className = 'metric-label'; avgVLbl.textContent = 'Average System Vitality: ';
+                const avgVValD = document.createElement('span'); avgVValD.className = 'metric-value'; avgVValD.id = 'avg-vitality-value';
+                avgVI.appendChild(avgVLbl); avgVI.appendChild(avgVValD); metricsDisplay.appendChild(avgVI);
+            }
+            for (const stateName in metrics.stateDistribution) {
+                const stateData = metrics.stateDistribution[stateName];
+                const valD = metricsDisplay.querySelector(`[data-value-for-name="${stateName}"]`); if (valD) { valD.textContent = `${stateData.percentage}% (${stateData.count})`; }
+                const bar = metricsDisplay.querySelector(`[data-bar-for-name="${stateName}"]`); if (bar) { bar.style.width = `${stateData.percentage}%`; }
+            }
+            const avgVValD = document.getElementById('avg-vitality-value'); if (avgVValD) { avgVValD.textContent = metrics.averageVitality; }
+        }
+
+        function populateLegend() {
+            const legendContainer = safeGetElement('legend-container');
+            if (!legendContainer) return;
+            legendContainer.innerHTML = ''; 
+            const sortedStateEntries = Object.entries(ECO_STATES).sort(([, valA], [, valB]) => valA - valB);
+
+            for (const [stateKey, stateValue] of sortedStateEntries) {
+                if (STATE_NAMES[stateValue] && STATE_COLORS[stateValue]) {
+                    const stateName = STATE_NAMES[stateValue];
+                    const stateColor = STATE_COLORS[stateValue];
+                    const item = document.createElement('div'); item.className = 'legend-item';
+                    const swatch = document.createElement('div'); swatch.className = 'legend-color-swatch'; swatch.style.backgroundColor = stateColor;
+                    const text = document.createElement('span'); text.textContent = stateName;
+                    item.appendChild(swatch); item.appendChild(text); legendContainer.appendChild(item);
+                }
+            }
+        }
+
+        function setupControls() {
+            const pausePlayButton = safeGetElement('pausePlayButton');
+            const fpsSlider = safeGetElement('fpsSlider');
+            const fpsValueDisplay = safeGetElement('fpsValue');
+            const cellSizeSlider = safeGetElement('cellSizeSlider');
+            const cellSizeValueDisplay = safeGetElement('cellSizeValue');
+            const resetButton = safeGetElement('resetButton');
+            const respectSlider = safeGetElement('respectSlider');
+            const patienceSlider = safeGetElement('patienceSlider');
+            const kindnessSlider = safeGetElement('kindnessSlider');
+            const toggleLoggingButton = safeGetElement('toggleLoggingButton');
+            const exportLogsButton = safeGetElement('exportLogsButton');
+
+             if (respectSlider) respectSlider.parentElement.title = "System Respect: Influences Resonance, Boundaries, Enhancing Flow propagation. Aims to boost harmonious activities and coherence.";
+             if (patienceSlider) patienceSlider.parentElement.title = "System Patience: Influences Resilience to Extraction, Extractive Defense, Endurance. Aims to make the system more robust against negative patterns.";
+             if (kindnessSlider) kindnessSlider.parentElement.title = "System Kindness: Influences Cyclical Renewal, Adaptability, Fertile Void. Aims to promote healthy lifecycles, decomposition of old, and emergence of new.";
+
+            if (pausePlayButton) {
+                pausePlayButton.addEventListener('click', () => {
+                    isPaused = !isPaused;
+                    pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
+                    logEvent(isPaused ? 'SIMULATION_PAUSED_MANUALLY' : 'SIMULATION_RESUMED_MANUALLY');
+                    if (!isPaused) { lastFrameTime = performance.now(); }
+                });
+            }
+            if (fpsSlider && fpsValueDisplay) {
+                fpsSlider.addEventListener('input', (e) => {
+                    targetFPS = parseInt(e.target.value); fpsValueDisplay.textContent = targetFPS; frameInterval = 1000 / targetFPS;
+                     logEvent('FPS_CHANGED', { newFPS: targetFPS });
+                });
+                fpsValueDisplay.textContent = targetFPS; fpsSlider.value = targetFPS;
+            }
+            if (cellSizeSlider && cellSizeValueDisplay) {
+                cellSizeSlider.addEventListener('input', (e) => { cellSizeValueDisplay.textContent = e.target.value; });
+                cellSizeSlider.addEventListener('change', (e) => {
+                    const newSize = parseInt(e.target.value);
+                    if (newSize !== currentCellSize) {
+                        currentCellSize = newSize; logEvent('CELL_SIZE_CHANGED', { newSize: currentCellSize }); resetSimulation(); 
+                    }
+                });
+                 cellSizeValueDisplay.textContent = currentCellSize; cellSizeSlider.value = currentCellSize;
+            }
+            if (resetButton) { resetButton.addEventListener('click', resetSimulation); }
+            const metaSliders = [respectSlider, patienceSlider, kindnessSlider];
+            metaSliders.forEach(slider => { if (slider) { slider.addEventListener('input', updateEcoArtParametersFromMetaSliders); } });
+            if (toggleLoggingButton) { toggleLoggingButton.addEventListener('click', toggleLogging); }
+            if (exportLogsButton) { exportLogsButton.addEventListener('click', exportLogs); }
+        }
+
+        function resetSimulation() {
+            logEvent('SIMULATION_RESET_REQUESTED', { currentCellSize: currentCellSize });
+
+            // 1. Cancel any existing animation loop FIRST
+            if (globalAnimationFrameId) {
+                cancelAnimationFrame(globalAnimationFrameId);
+                globalAnimationFrameId = null; // Explicitly nullify
+                logEvent('PREVIOUS_ANIMATION_LOOP_CANCELLED_ON_RESET');
+            }
+
+            if (isLoggingActive && logStartTime > 0) { simulationTimeOffset += (performance.now() - logStartTime); }
+            logStartTime = performance.now(); 
+            const canvasContainer = safeGetElement('canvas-container');
+            if (!canvasContainer) {
+                logEvent('SIMULATION_RESET_FAILED', { reason: 'Canvas container not found' }); console.error("Cannot reset: Canvas container not found."); return;
+            }
+            try {
+                ecoArtGrid = new EcoArtGridMK3(canvasContainer.clientWidth, canvasContainer.clientHeight, currentCellSize);
+                logEvent('GRID_RECREATED_ON_RESET', {
+                    cols: ecoArtGrid.cols, rows: ecoArtGrid.rows, cellSize: ecoArtGrid.cellSize, canvasWidth: ecoArtGrid.width, canvasHeight: ecoArtGrid.height,
+                });
+            } catch (error) {
+                 logEvent('SIMULATION_RESET_ERROR', { error: error.message, stack: error.stack }); console.error("Error creating grid during reset:", error); return; 
+            }
+            isPaused = false;
+            const pausePlayButton = safeGetElement('pausePlayButton'); 
+            if (pausePlayButton) { pausePlayButton.textContent = 'Pause'; }
+
+            // Update configurations and UI displays
+            // Note: updateEcoArtParametersFromMetaSliders will call updateDashboardDisplay
+            updateEcoArtParametersFromMetaSliders(); 
+            calculateAndDisplaySystemMetrics(); // This is mostly reading state, should be fine
+
+            // 2. Reset timing and start the new animation loop
+            lastFrameTime = performance.now(); // Critical: reset time *just before* new loop
+            if (ecoArtGrid && typeof ecoArtGrid.animate === 'function') {
+                globalAnimationFrameId = requestAnimationFrame((ts) => ecoArtGrid.animate(ts));
+                logEvent('NEW_ANIMATION_LOOP_STARTED_ON_RESET');
+            } else {
+                logEvent('SIMULATION_RESET_ERROR', { reason: 'Grid or animate method invalid after reset attempt' });
+            }
+        }
+
+        function addWindowResizeHandler() {
+            if (!resizeEventAdded) {
+                 let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => { logEvent('WINDOW_RESIZED_TRIGGERING_RESET'); resetSimulation(); }, 300); 
+                });
+                resizeEventAdded = true; logEvent('RESIZE_HANDLER_ADDED');
+            }
+        }
+
+        function initEcoArtCA() {
+            logEvent('SIMULATION_INIT_START_CA11');
+            const canvasContainer = safeGetElement('canvas-container');
+            if (!canvasContainer || canvasContainer.clientWidth === 0 || canvasContainer.clientHeight === 0) {
+                logEvent('SIMULATION_INIT_FAILED', { reason: 'Canvas container not found or has zero dimensions' }); setTimeout(initEcoArtCA, 200); return;
+            }
+            try {
+                // Cancel any pre-existing loop from a previous failed init or other state
+                if (globalAnimationFrameId) {
+                    cancelAnimationFrame(globalAnimationFrameId);
+                    globalAnimationFrameId = null;
+                }
+
+                ecoArtGrid = new EcoArtGridMK3(canvasContainer.clientWidth, canvasContainer.clientHeight, currentCellSize);
+                populateLegend(); 
+                populateLiveConfigDashboard(); 
+                setupControls();
+                
+                updateEcoArtParametersFromMetaSliders(); // This will also call updateDashboardDisplay
+                calculateAndDisplaySystemMetrics(); 
+                addWindowResizeHandler();
+                
+                lastFrameTime = performance.now(); // Reset time
+                globalAnimationFrameId = requestAnimationFrame((ts) => ecoArtGrid.animate(ts));
+                logEvent('SIMULATION_INIT_SUCCESSFUL_CA11');
+            } catch (error) {
+                 logEvent('SIMULATION_INIT_ERROR', { error: error.message, stack: error.stack });
+                 console.error("Error during EcoArt CA initialization:", error);
+                 alert("Failed to initialize the simulation. Check the console for errors.");
+            }
+        }
+        
+        class EcoArtCellMK3 {
+            constructor(x, y, initialState = ECO_STATES.VOID) {
+                this.x = x; this.y = y; this.state = initialState; this.prevState = initialState;
+                this.vitality = Math.floor(Math.random() * MAX_VITALITY / INITIAL_VITALITY_RANDOM_FACTOR) + MAX_VITALITY / INITIAL_VITALITY_BASE_FACTOR;
+                this.ageInState = 0;
+            }
+
+            setState(newState, newVitality) {
+                if (this.state !== newState) {
+                    this.prevState = this.state;
+                    this.state = newState;
+                    this.ageInState = 0;
+                }
+                this.vitality = Math.max(0, Math.min(MAX_VITALITY, newVitality));
+            }
+
+            prepareUpdate(neighbors, grid) {
+                this.prevState = this.state;
+                const respect = parseInt(safeGetElement('respectSlider').value);
+                const patience = parseInt(safeGetElement('patienceSlider').value);
+                const kindness = parseInt(safeGetElement('kindnessSlider').value);
+                const allSlidersAtZero = (respect === 0 && patience === 0 && kindness === 0);
+
+                grid.applyTransitionRules(this, neighbors, respect, patience, kindness);
+
+                if (this.state === this.prevState) { this.ageInState++; } else { this.ageInState = 0; }
+
+                let vitalityChange = 0;
+                if (this.state !== ECO_STATES.VOID && this.state !== ECO_STATES.DECOMPOSING) {
+                    let metabolicCost = 0.05;
+                    if (!allSlidersAtZero && (respect <= 10 || patience <= 10 || kindness <= 10)) { metabolicCost = 0.1; }
+                    vitalityChange -= metabolicCost;
+                }
+
+                if (allSlidersAtZero && this.state !== ECO_STATES.VOID && this.state !== ECO_STATES.DECOMPOSING) { // Exclude DECOMPOSING from this specific block
+                    if (this.state === ECO_STATES.FLOW_HARMONIOUS || this.state === ECO_STATES.SEED_ENHANCING) vitalityChange += -2.0; // Example: Less severe hit
+                    else if (this.state === ECO_STATES.FLOW_EXTRACTIVE || this.state === ECO_STATES.SEED_EXTRACTIVE) vitalityChange += -2.0; // Example: Less severe hit
+                    else if (this.state === ECO_STATES.BOUNDARY_HEALTHY || this.state === ECO_STATES.COMPOSING || this.state === ECO_STATES.PATTERN_CHAOTIC || this.state === ECO_STATES.RIGID || this.state === ECO_STATES.ORDER) vitalityChange += -1.0;
+                } else if (this.state === ECO_STATES.DECOMPOSING) { // Specific logic for DECOMPOSING state vitality change
+                    if (allSlidersAtZero) {
+                        vitalityChange = -2.0; // Significantly faster decay when all sliders are zero
+                    } else {
+                        vitalityChange = -(liveRuleConfig.decomposition_speedFactor || 0.01);
+                    }
+                } else if (this.state !== ECO_STATES.VOID) { // For other states not DECOMPOSING and not VOID, and not allSlidersAtZero
+                    const cfg = liveRuleConfig;
+                    switch (this.state) {
+                        case ECO_STATES.FLOW_HARMONIOUS: vitalityChange += cfg.flowHarmonious_naturalVitalityGain; break;
+                        case ECO_STATES.SEED_ENHANCING: vitalityChange += cfg.seedEnhancing_naturalVitalityGain; break;
+                        case ECO_STATES.SEED_EXTRACTIVE: vitalityChange += cfg.seedExtractive_naturalVitalityGain; break;
+                        case ECO_STATES.FLOW_EXTRACTIVE: 
+                            vitalityChange -= (cfg.flowExtractive_intrinsicDecayRate || 0.02); // APPLY THE NEW DECAY FACTOR
+                            break; 
+                        case ECO_STATES.DECOMPOSING: vitalityChange = -cfg.decomposition_speedFactor; break;
+                        case ECO_STATES.BOUNDARY_HEALTHY:
+                            const nC = grid.countNeighborStates(neighbors); // Assuming grid refers to EcoArtGridMK3 instance
+                            if (nC[ECO_STATES.FLOW_EXTRACTIVE] === 0 && nC[ECO_STATES.SEED_EXTRACTIVE] === 0) vitalityChange -= 0.02;
+                            break;
+                        case ECO_STATES.PATTERN_CHAOTIC:
+                             const baseChaoticChange = mapValue(kindness, 0, 100, -0.15, 0.25);
+                             vitalityChange += baseChaoticChange + (Math.random() - 0.5) * cfg.pattern_chaotic_naturalVitalityFluctuation;
+                             break;
+                        case ECO_STATES.COMPOSING: vitalityChange += (cfg.composing_naturalVitalityGain_or_Decay || -0.01); break;
+                        case ECO_STATES.RIGID: vitalityChange -= 0.005; break;
+                        case ECO_STATES.ORDER: vitalityChange += (cfg.order_naturalVitalityGain_or_Decay || 0.005); break;
+                    }
+                }
+                this.vitality += vitalityChange;
+                this.vitality = Math.max(0, Math.min(this.vitality, MAX_VITALITY));
+            }
+        }
+
+        class EcoArtGridMK3 {
+            constructor(width, height, cellSize) {
+                this.width = width; this.height = height; this.cellSize = cellSize;
+                this.cols = Math.floor(width / cellSize); this.rows = Math.floor(height / cellSize);
+                this.grid = this.createGrid();
+                this.canvas = safeGetElement('ecoart-canvas-mk5');
+                if (this.canvas) { this.ctx = this.canvas.getContext('2d'); this.canvas.width = width; this.canvas.height = height; }
+                else { console.error("Canvas element 'ecoart-canvas-mk5' not found in constructor!"); }
+            }
+
+            createGrid() {
+                const respectSliderVal = parseInt(safeGetElement('respectSlider')?.value) || 50;
+                const patienceSliderVal = parseInt(safeGetElement('patienceSlider')?.value) || 50;
+                const kindnessSliderVal = parseInt(safeGetElement('kindnessSlider')?.value) || 50;
+
+                if (respectSliderVal === 0 && patienceSliderVal === 0 && kindnessSliderVal === 0) {
+                    logEvent('GRID_INIT_ALL_VOID');
+                    return Array(this.cols).fill(null).map((_, c) => Array(this.rows).fill(null).map((_, r) => new EcoArtCellMK3(c, r, ECO_STATES.VOID)));
+                }
+                logEvent('GRID_INIT_HIERARCHICAL_CHAOTIC_SEEDED_CA11');
+                return Array(this.cols).fill(null).map((_, c) =>
+                    Array(this.rows).fill(null).map((_, r) => {
+                        const rnd = Math.random();
+                        if (rnd < 0.015) return new EcoArtCellMK3(c, r, ECO_STATES.PATTERN_CHAOTIC);
+                        else if (rnd < 0.030) return new EcoArtCellMK3(c, r, ECO_STATES.COMPOSING);
+                        return new EcoArtCellMK3(c, r, ECO_STATES.VOID);
+                    })
+                );
+            }
+
+            getNeighbors(cX, cY) { // To be filled by AI from CA10.html
+                const neighbors = [];
+                for (let i = -1; i <= 1; i++) {
+                    for (let j = -1; j <= 1; j++) {
+                        if (i === 0 && j === 0) continue;
+                        const nCol = (cX + i + this.cols) % this.cols;
+                        const nRow = (cY + j + this.rows) % this.rows;
+                        if (this.grid[nCol] && this.grid[nCol][nRow]) {
+                            neighbors.push(this.grid[nCol][nRow]);
+                        }
+                    }
+                }
+                return neighbors;
+            }
+
+            countNeighborStates(neighbors) { // To be filled by AI from CA10.html
+                const counts = {};
+                for (const stateKey in ECO_STATES) { 
+                    counts[ECO_STATES[stateKey]] = 0;
+                }
+                for (const neighbor of neighbors) {
+                    if (counts[neighbor.state] !== undefined) {
+                        counts[neighbor.state]++;
+                    } else {
+                        counts[neighbor.state] = 1; 
+                    }
+                }
+                return counts;
+            }
+
+            applyTransitionRules(cell, neighbors, respect, patience, kindness) {
+                const neighborCounts = this.countNeighborStates(neighbors);
+                const originalState = cell.state;
+                const randomCheck = Math.random(); 
+                const age = cell.ageInState;
+                const vitality = cell.vitality;
+                const cfg = liveRuleConfig;
+
+                // --- VOID TRANSITIONS (CA11.1 Hierarchical) ---
+                if (cell.state === ECO_STATES.VOID) {
+                    let currentSpontaneousChaosChance = cfg.void_spontaneousChaosChance_base;
+                    let chaosVitalityBonus = 0;
+                    if (neighborCounts[ECO_STATES.DECOMPOSING] > 0) {
+                        currentSpontaneousChaosChance += (neighborCounts[ECO_STATES.DECOMPOSING] * cfg.void_spontaneousChaosChance_base * cfg.void_chaosFertilizationFactor_byDecomposing);
+                        chaosVitalityBonus = Math.min(neighborCounts[ECO_STATES.DECOMPOSING] * (MAX_VITALITY / (INITIAL_VITALITY_RANDOM_FACTOR * 2)), MAX_VITALITY * 0.6 );
+                    }
+                    if (randomCheck < currentSpontaneousChaosChance) {
+                        const oldSt = cell.state; cell.setState(ECO_STATES.PATTERN_CHAOTIC, Math.min(MAX_VITALITY, (MAX_VITALITY / INITIAL_VITALITY_BASE_FACTOR) + chaosVitalityBonus));
+                        logEvent('CELL_STATE_CHANGE', { x:cell.x,y:cell.y,oldState:STATE_NAMES[oldSt],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:(neighborCounts[ECO_STATES.DECOMPOSING]>0?'VOID_TO_CHAOTIC_FERTILIZED':'VOID_SPONTANEOUS_CHAOS')});
+                        return; 
+                    }
+                    let spreadRandomEnh = Math.random();
+                    if ((neighborCounts[ECO_STATES.SEED_ENHANCING] > 0 || neighborCounts[ECO_STATES.FLOW_HARMONIOUS] > 1) && spreadRandomEnh < cfg.flowHarmonious_spreadChanceToVoid) {
+                        const oS = cell.state; cell.setState(ECO_STATES.SEED_ENHANCING, MAX_VITALITY / 2.5);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'VOID_TO_SEED_ENHANCING_BY_NEIGHBOR'});
+                        return;
+                    }
+                    let spreadRandomExt = Math.random();
+                    if ((neighborCounts[ECO_STATES.SEED_EXTRACTIVE] > 0 || neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] > 0) && spreadRandomExt < cfg.flowExtractive_spreadToVoidChance ) {
+                        const oS = cell.state; cell.setState(ECO_STATES.SEED_EXTRACTIVE, MAX_VITALITY / 3);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'VOID_TO_SEED_EXTRACTIVE_BY_NEIGHBOR'});
+                        return;
+                    }
+                } // --- END VOID ---
+
+                // --- PATTERN_CHAOTIC TRANSITIONS (CA11.1 Hierarchical) ---
+                else if (cell.state === ECO_STATES.PATTERN_CHAOTIC) {
+                    if (neighborCounts[ECO_STATES.FLOW_HARMONIOUS] >= cfg.chaotic_harmoniousNeighbors_for_enhancing && vitality > cfg.chaotic_vitalityThreshold_for_enhancing && Math.random() < cfg.chaotic_chance_coalesceToSeedEnhancing) {
+                        const oS=cell.state; cell.setState(ECO_STATES.SEED_ENHANCING, Math.min(MAX_VITALITY, vitality*0.85));
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'CHAOTIC_COALESCES_TO_ENHANCING_WITH_FLOW'});
+                        return;
+                    }
+                    else if (neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] >= cfg.chaotic_extractiveNeighbors_for_extractive && vitality > cfg.chaotic_vitalityThreshold_for_extractive && Math.random() < cfg.chaotic_chance_coalesceToSeedExtractive) {
+                        const oS=cell.state; cell.setState(ECO_STATES.SEED_EXTRACTIVE, Math.min(MAX_VITALITY, vitality*0.75));
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'CHAOTIC_COALESCES_TO_EXTRACTIVE_WITH_FLOW'});
+                        return;
+                    }
+                    else if (neighborCounts[ECO_STATES.FLOW_HARMONIOUS] === 0 && neighborCounts[ECO_STATES.SEED_ENHANCING] === 0 &&
+                             neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] === 0 && neighborCounts[ECO_STATES.SEED_EXTRACTIVE] === 0 &&
+                             vitality > MAX_VITALITY / 3 ) { 
+                        let r_resolve = Math.random(); 
+                        if (r_resolve < cfg.chaotic_intrinsicResolveToEnhancingChance) {
+                            const oS = cell.state; cell.setState(ECO_STATES.SEED_ENHANCING, Math.min(MAX_VITALITY, vitality * 0.8));
+                            logEvent('CELL_STATE_CHANGE', { x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'CHAOTIC_INTRINSIC_TO_ENHANCING'});
+                            return;
+                        } 
+                        else if (r_resolve < (cfg.chaotic_intrinsicResolveToEnhancingChance + cfg.chaotic_intrinsicResolveToExtractiveChance)) { 
+                            const oS = cell.state; cell.setState(ECO_STATES.SEED_EXTRACTIVE, Math.min(MAX_VITALITY, vitality * 0.6));
+                            logEvent('CELL_STATE_CHANGE', { x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'CHAOTIC_INTRINSIC_TO_EXTRACTIVE'});
+                            return;
+                        }
+                    }
+                    else if (neighborCounts[ECO_STATES.RIGID] > 0 && Math.random() < cfg.chaos_breakdownRigidChance) {
+                        const targetNeighbor = neighbors.find(n => n.state === ECO_STATES.RIGID);
+                        if(targetNeighbor) { 
+                            const oNState = targetNeighbor.state; targetNeighbor.setState(ECO_STATES.DECOMPOSING, targetNeighbor.vitality / 2); 
+                            logEvent('NEIGHBOR_STATE_CHANGE', {x:targetNeighbor.x,y:targetNeighbor.y,oldState:STATE_NAMES[oNState],newState:STATE_NAMES[targetNeighbor.state],vitality:targetNeighbor.vitality.toFixed(1),age:targetNeighbor.ageInState,triggeredBy:{x:cell.x,y:cell.y,state:STATE_NAMES[cell.state]},ruleTrigger:'CHAOS_BREAKS_RIGID'});
+                        }
+                        if(Math.random() < 0.1) { const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, cell.vitality /=2); logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'CHAOS_DECAYS_BREAKING_RIGID'}); return;}
+                    }
+                    else if (neighborCounts[ECO_STATES.COMPOSING] > 0 && Math.random() < cfg.chaos_breakdownComposingChance) { 
+                        const targetNeighbor = neighbors.find(n => n.state === ECO_STATES.COMPOSING);
+                        if(targetNeighbor) { 
+                            const oNState = targetNeighbor.state; targetNeighbor.setState(ECO_STATES.DECOMPOSING, targetNeighbor.vitality / 2); 
+                            logEvent('NEIGHBOR_STATE_CHANGE', {x:targetNeighbor.x,y:targetNeighbor.y,oldState:STATE_NAMES[oNState],newState:STATE_NAMES[targetNeighbor.state],vitality:targetNeighbor.vitality.toFixed(1),age:targetNeighbor.ageInState,triggeredBy:{x:cell.x,y:cell.y,state:STATE_NAMES[cell.state]},ruleTrigger:'CHAOS_BREAKS_COMPOSING'});
+                        }
+                        if(Math.random() < 0.1) { const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, cell.vitality /=2); logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'CHAOS_DECAYS_BREAKING_COMPOSING'}); return;}
+                    }
+                    else if (age > MAX_AGE * 1.5 && vitality < MAX_VITALITY / 6 && Math.random() < 0.02) { 
+                        const oS = cell.state; cell.setState(ECO_STATES.VOID, MAX_VITALITY / INITIAL_VITALITY_BASE_FACTOR); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'CHAOTIC_DECAY_TO_VOID'});
+                        return;
+                    }
+                } // --- END PATTERN_CHAOTIC ---
+
+                else if (cell.state === ECO_STATES.SEED_ENHANCING) {
+                    if (neighborCounts[ECO_STATES.FLOW_HARMONIOUS] >= 1 && vitality > MAX_VITALITY / 2.5 && neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] === 0 && Math.random() < cfg.flowHarmonious_spreadChanceToSeed * 2.5) {
+                        const oS = cell.state; cell.setState(ECO_STATES.FLOW_HARMONIOUS, vitality * 1.1); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'SEED_ENHANCING_MATURES_TO_FLOW_BY_NEIGHBOR'}); return;
+                    }
+                    else if (vitality > MAX_VITALITY * 0.45 && neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] === 0 && neighborCounts[ECO_STATES.SEED_EXTRACTIVE] === 0 && Math.random() < mapValue(respect, 0, 100, 0.01, 0.20)) {
+                        const oS = cell.state; cell.setState(ECO_STATES.FLOW_HARMONIOUS, vitality); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'SEED_ENHANCING_SELF_MATURES_TO_FLOW'}); return;
+                    }
+                    else if (age > MAX_AGE / 3 && vitality > MAX_VITALITY / 3 && Math.random() < cfg.seed_to_composing_chance_enhancing) {
+                        const oS = cell.state; cell.setState(ECO_STATES.COMPOSING, vitality * 0.7); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'SEED_ENHANCING_TO_COMPOSING'}); return;
+                    }
+                    else if (neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] > 0 && Math.random() < cfg.flowHarmonious_vulnerabilityToExtractive * 0.5) { 
+                        const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, Math.max(0, vitality / 3)); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'SEED_ENHANCING_DEGRADED_BY_EXTRACTIVE'}); return;
+                    }
+                    else if (age > AGE_FACTOR_SEED_TO_VOID * MAX_AGE && vitality < MAX_VITALITY / 6) {
+                        const oS = cell.state; cell.setState(ECO_STATES.VOID, MAX_VITALITY / (INITIAL_VITALITY_BASE_FACTOR * 2)); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'SEED_ENHANCING_DECAYS_TO_VOID'}); return;
+                    }
+                    else if ((neighborCounts[ECO_STATES.SEED_EXTRACTIVE] > 0 || neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] > 0) && Math.random() < cfg.boundaryHealthy_formationChanceFromSeed) {
+                        const oS = cell.state; cell.setState(ECO_STATES.BOUNDARY_HEALTHY, Math.min(MAX_VITALITY, vitality * 1.1));  
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'SEED_ENHANCING_TO_BOUNDARY_DEFENSE'}); return;
+                    }
+                } // --- END SEED_ENHANCING ---
+
+                else if (cell.state === ECO_STATES.FLOW_HARMONIOUS) {
+                    if (vitality < cfg.harmonious_vitalityThreshold_for_degradation &&
+                        neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] >= cfg.harmonious_extractiveNeighbors_for_degradation &&
+                        Math.random() < cfg.harmonious_chance_degradeToSeedExtractive) {
+                        const oS = cell.state; cell.setState(ECO_STATES.SEED_EXTRACTIVE, vitality / 2);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_HARMONIOUS_DEGRADES_TO_SEED_EXTRACTIVE'}); 
+                        return;
+                    }
+                    else if (vitality < cfg.harmonious_vitalityThreshold_for_chaos &&
+                             Math.random() < cfg.harmonious_chance_degradeToChaotic) {
+                        const oS = cell.state; cell.setState(ECO_STATES.PATTERN_CHAOTIC, vitality / 2);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_HARMONIOUS_BREAKS_DOWN_TO_CHAOTIC'}); 
+                        return;
+                    }
+                    else if (vitality < cfg.flow_to_composing_vitality_threshold && age > MAX_AGE / 2 && Math.random() < cfg.flow_to_composing_chance_harmonious) {
+                       const oS = cell.state; cell.setState(ECO_STATES.COMPOSING, vitality * 0.5); 
+                       logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_HARMONIOUS_TO_COMPOSING'}); 
+                       return;
+                    }
+                    else if (neighborCounts[ECO_STATES.VOID] > 0 && Math.random() < cfg.flowHarmonious_spreadChanceToVoid) {
+                        const voidNeighbor = neighbors.find(n => n.state === ECO_STATES.VOID && Math.random() < 0.75);
+                        if (voidNeighbor) {
+                            const oldNeighborStateForLog = voidNeighbor.state;
+                            voidNeighbor.setState(ECO_STATES.SEED_ENHANCING, Math.max(0, Math.min(MAX_VITALITY, cell.vitality * cfg.flowHarmonious_vitalityGainOnSpread + MAX_VITALITY/INITIAL_VITALITY_BASE_FACTOR)));
+                            logEvent('NEIGHBOR_STATE_CHANGE', { primaryCell: {x: cell.x, y: cell.y, state: STATE_NAMES[originalState], vitality: cell.vitality.toFixed(1)}, neighbor: {x: voidNeighbor.x, y: voidNeighbor.y, oldState: STATE_NAMES[oldNeighborStateForLog], newState: STATE_NAMES[voidNeighbor.state], vitality: voidNeighbor.vitality.toFixed(1)}, ruleTrigger: 'FLOW_HARMONIOUS_SPREADS_TO_VOID_AS_SEED_ENHANCING'});
+                        }
+                    }
+                    else if (neighborCounts[ECO_STATES.SEED_ENHANCING] > 0 && Math.random() < cfg.flowHarmonious_spreadChanceToSeed) {
+                        const seedNeighbor = neighbors.find(n => n.state === ECO_STATES.SEED_ENHANCING && Math.random() < 0.75);
+                        if (seedNeighbor) {
+                            const oldNeighborStateForLog = seedNeighbor.state;
+                            seedNeighbor.setState(ECO_STATES.FLOW_HARMONIOUS, Math.max(0, Math.min(MAX_VITALITY, seedNeighbor.vitality + cell.vitality * 0.1 + cfg.flowHarmonious_vitalityGainOnSpread)));
+                             logEvent('NEIGHBOR_STATE_CHANGE', { primaryCell: {x: cell.x, y: cell.y, state: STATE_NAMES[originalState], vitality: cell.vitality.toFixed(1)}, neighbor: {x: seedNeighbor.x, y: seedNeighbor.y, oldState: STATE_NAMES[oldNeighborStateForLog], newState: STATE_NAMES[seedNeighbor.state], vitality: seedNeighbor.vitality.toFixed(1)}, ruleTrigger: 'FLOW_HARMONIOUS_MATURES_SEED_ENHANCING'});
+                        }
+                    }
+                    else if ((neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] > 0 || neighborCounts[ECO_STATES.SEED_EXTRACTIVE] > 0) &&
+                             Math.random() < cfg.boundaryHealthy_formationChanceFromHarmonious) {
+                        const oS = cell.state; cell.setState(ECO_STATES.BOUNDARY_HEALTHY, Math.min(MAX_VITALITY, vitality * 1.2 + MAX_VITALITY*0.1)); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_HARMONIOUS_TO_BOUNDARY_DEFENSE'}); 
+                        return;
+                    }
+                    else if (age > MAX_AGE * 2 && vitality < MAX_VITALITY / 8 && Math.random() < 0.05) {
+                        const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 2);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_HARMONIOUS_DECAY_OLD_LOW_VITALITY'}); 
+                        return;
+                    }
+                } // --- END FLOW_HARMONIOUS ---
+
+                else if (cell.state === ECO_STATES.SEED_EXTRACTIVE) {
+                    if (vitality > MAX_VITALITY * 0.55 && age > MAX_AGE / 15 && Math.random() < mapValue(patience, 0, 100, 0.16, 0.05)) {
+                        const oS = cell.state; cell.setState(ECO_STATES.FLOW_EXTRACTIVE, vitality * 0.9); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'SEED_EXTRACTIVE_SELF_MATURES'}); return;
+                    }
+                    else if (neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] >= 1 && vitality > MAX_VITALITY * 0.45 && Math.random() < (cfg.flowExtractive_spreadToSeedChance || 0.15) * 2.5) {
+                        const oS = cell.state; cell.setState(ECO_STATES.FLOW_EXTRACTIVE, Math.min(MAX_VITALITY, cell.vitality + MAX_VITALITY * 0.1)); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'SEED_EXTRACTIVE_MATURES_BY_FLOW'}); return;
+                    }
+                    else if (age > MAX_AGE / 3 && vitality > MAX_VITALITY / 3 && Math.random() < cfg.seed_to_composing_chance_extractive) {
+                        const oS = cell.state; cell.setState(ECO_STATES.COMPOSING, vitality * 0.7); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'SEED_EXTRACTIVE_TO_COMPOSING'}); return;
+                    }
+                    else if (age > AGE_FACTOR_SEED_TO_VOID * MAX_AGE && vitality < MAX_VITALITY / 6) {
+                        const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 2); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'SEED_EXTRACTIVE_DECAYS'}); return;
+                    }
+                } // --- END SEED_EXTRACTIVE ---
+
+                else if (cell.state === ECO_STATES.FLOW_EXTRACTIVE) {
+                    if (neighborCounts[ECO_STATES.FLOW_HARMONIOUS] >= cfg.extractive_harmoniousNeighbors_for_conversion &&
+                        neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] <= cfg.extractive_maxFellowExtractives_for_conversion &&
+                        vitality > cfg.extractive_vitalityThreshold_for_conversion &&
+                        Math.random() < cfg.extractive_chance_convertToChaotic) { 
+                        const oS = cell.state; cell.setState(ECO_STATES.PATTERN_CHAOTIC, Math.min(MAX_VITALITY, vitality + MAX_VITALITY * 0.4));
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_EXTRACTIVE_REDEMPTION_TO_CHAOTIC'});
+                        return;
+                    }
+                    else if (vitality > cfg.extractive_vitalityThreshold_for_boundary &&
+                             age > cfg.extractive_age_for_boundary_conversion &&
+                             Math.random() < cfg.extractive_chance_convertToBoundary) {
+                        const oS = cell.state; cell.setState(ECO_STATES.BOUNDARY_HEALTHY, MAX_VITALITY * 0.7);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_EXTRACTIVE_CONTAINED_TO_BOUNDARY'});
+                        return;
+                    }
+                    else if (vitality < cfg.extractive_vitalityThreshold_for_composing && 
+                             age > cfg.extractive_age_for_composing_conversion &&    
+                             Math.random() < cfg.extractive_chance_convertToComposing) { 
+                        const oS = cell.state; cell.setState(ECO_STATES.COMPOSING, vitality * 0.5); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_EXTRACTIVE_CALCIFIED_TO_COMPOSING'});
+                        return;
+                    }
+                    else if (vitality < cfg.flow_to_composing_vitality_threshold && age > MAX_AGE / 1.5 && Math.random() < cfg.flow_to_composing_chance_extractive) {
+                       const oS = cell.state; cell.setState(ECO_STATES.COMPOSING, vitality * 0.4); 
+                       logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_EXTRACTIVE_STAGNATES_TO_COMPOSING'}); 
+                       return;
+                    }
+                    else {
+                        let gainedVitalityFromExtraction = 0;
+                        let hasSpreadThisTick = false;
+                        let initialVitalityForLog = cell.vitality;
+
+                        neighbors.forEach(n => {
+                            if (n.state === ECO_STATES.VOID || n.state === ECO_STATES.DECOMPOSING || n.state === ECO_STATES.FLOW_EXTRACTIVE || n.state === ECO_STATES.SEED_EXTRACTIVE || n.state === ECO_STATES.RIGID || n.state === ECO_STATES.BOUNDARY_HEALTHY || n.state === ECO_STATES.ORDER) {
+                                // Cannot extract from these states
+                            } else if (n.vitality > 0) {
+                                if (Math.random() < cfg.flowExtractive_successChance) {
+                                    const potentialExtraction = (5 + vitality * cfg.flowExtractive_potencyFactor);
+                                    const extracted = Math.min(n.vitality, potentialExtraction);
+                                    const oldNeighborVitality = n.vitality;
+                                    n.vitality -= extracted;
+                                    gainedVitalityFromExtraction += extracted * cfg.flowExtractive_efficiency;
+                                    logEvent('NEIGHBOR_VITALITY_CHANGE', { primaryCell: {x: cell.x, y: cell.y, state: STATE_NAMES[originalState]}, neighbor: {x: n.x, y: n.y, state: STATE_NAMES[n.state], oldVitality: oldNeighborVitality.toFixed(1), newVitality: n.vitality.toFixed(1)}, extractedAmount: extracted.toFixed(1), ruleTrigger: 'FLOW_EXTRACTIVE_EXTRACTS_VITALITY'});
+                                    if (n.vitality <= 0 && n.state !== ECO_STATES.DECOMPOSING) {
+                                        const oldNeighborStateForLog = n.state;
+                                        n.setState(ECO_STATES.DECOMPOSING, 0);
+                                        logEvent('NEIGHBOR_STATE_CHANGE', { primaryCell: {x: cell.x, y: cell.y, state: STATE_NAMES[originalState]}, neighbor: {x: n.x, y: n.y, oldState: STATE_NAMES[oldNeighborStateForLog], newState: STATE_NAMES[ECO_STATES.DECOMPOSING]}, ruleTrigger: 'NEIGHBOR_DEPLETED_TO_DECOMPOSING_BY_EXTRACTIVE'});
+                                    }
+                                }
+                            }
+                            if (!hasSpreadThisTick) {
+                                if (n.state === ECO_STATES.SEED_EXTRACTIVE && vitality > n.vitality * 0.5 && Math.random() < cfg.flowExtractive_spreadToSeedChance) {
+                                    const oldNeighborStateForLog = n.state;
+                                    n.setState(ECO_STATES.FLOW_EXTRACTIVE, Math.min(MAX_VITALITY, n.vitality + vitality * 0.15));
+                                    logEvent('NEIGHBOR_STATE_CHANGE', { primaryCell: {x: cell.x, y: cell.y, state: STATE_NAMES[originalState]}, neighbor: {x: n.x, y: n.y, oldState: STATE_NAMES[oldNeighborStateForLog], newState: STATE_NAMES[n.state], vitality: n.vitality.toFixed(1)}, ruleTrigger: 'FLOW_EXTRACTIVE_SPREADS_TO_OWN_SEED'});
+                                    hasSpreadThisTick = true;
+                                }
+                                else if (n.state === ECO_STATES.VOID && vitality > MAX_VITALITY * 0.3 && age > 2 && Math.random() < cfg.flowExtractive_spreadToVoidChance) {
+                                    const oldNeighborStateForLog = n.state;
+                                    n.setState(ECO_STATES.SEED_EXTRACTIVE, Math.min(MAX_VITALITY, vitality * 0.25 + MAX_VITALITY/INITIAL_VITALITY_BASE_FACTOR));
+                                    logEvent('NEIGHBOR_STATE_CHANGE', { primaryCell: {x: cell.x, y: cell.y, state: STATE_NAMES[originalState]}, neighbor: {x: n.x, y: n.y, oldState: STATE_NAMES[oldNeighborStateForLog], newState: STATE_NAMES[n.state], vitality: n.vitality.toFixed(1)}, ruleTrigger: 'FLOW_EXTRACTIVE_SPREADS_TO_VOID'});
+                                    hasSpreadThisTick = true;
+                                }
+                            } 
+                        }); 
+                        cell.vitality = Math.min(MAX_VITALITY, cell.vitality + gainedVitalityFromExtraction);
+                        if (gainedVitalityFromExtraction > 0) {
+                             logEvent('CELL_VITALITY_CHANGE', {x:cell.x,y:cell.y,state:STATE_NAMES[originalState],oldVitality: initialVitalityForLog.toFixed(1), newVitality:cell.vitality.toFixed(1), change: gainedVitalityFromExtraction.toFixed(1), ruleTrigger:'FLOW_EXTRACTIVE_GAINS_FROM_EXTRACTION'});
+                        }
+                        
+                        if (vitality < MAX_VITALITY / 6 && age > MAX_AGE / 2.5 && Math.random() < 0.02) { 
+                            const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 2); 
+                            logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_EXTRACTIVE_DECAYS_LOW_VITALITY_AGE'}); return;
+                        }
+                        else if (neighborCounts[ECO_STATES.BOUNDARY_HEALTHY] > 1 && vitality < MAX_VITALITY * 0.8 && Math.random() < cfg.boundaryHealthy_effectivenessVsExtractive * 0.5 ) { 
+                            const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 3); 
+                            logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_EXTRACTIVE_DECAYS_BY_BOUNDARY_PRESSURE'}); return;
+                        }
+                        else if (neighborCounts[ECO_STATES.FLOW_HARMONIOUS] === 0 && neighborCounts[ECO_STATES.SEED_ENHANCING] === 0 && 
+                                 neighborCounts[ECO_STATES.COMPOSING] === 0 && // Checking against COMPOSING (formerly SOLID)
+                                 neighborCounts[ECO_STATES.VOID] < 2 && age > MAX_AGE / 4 &&
+                                 Math.random() < cfg.flowExtractive_decayWhenIsolatedChance) { 
+                            const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 2);
+                            logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'FLOW_EXTRACTIVE_DECAYS_WHEN_ISOLATED'}); return;
+                        }
+                    } 
+                } // --- END FLOW_EXTRACTIVE ---
+
+                else if (cell.state === ECO_STATES.BOUNDARY_HEALTHY) {
+                    if (neighborCounts[ECO_STATES.FLOW_HARMONIOUS] === 0 && neighborCounts[ECO_STATES.SEED_ENHANCING] === 0 && age > MAX_AGE / 1.5 && Math.random() < 0.02) { // Increased age threshold
+                        const oS = cell.state; cell.setState(ECO_STATES.VOID, MAX_VITALITY / INITIAL_VITALITY_BASE_FACTOR);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'BOUNDARY_DECAYS_TO_VOID_NO_PURPOSE'}); return;
+                    }
+                    else if (age > MAX_AGE * 1.2 && neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] === 0 && Math.random() < cfg.boundary_to_composing_chance) { // CA11: boundary_to_composing_chance
+                        const oS = cell.state; cell.setState(ECO_STATES.COMPOSING, vitality * 0.6); // Transition to COMPOSING
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'BOUNDARY_TO_COMPOSING_OLD_NO_THREAT'}); return;
+                    }
+                     else if (age > MAX_AGE * 2 && vitality > MAX_VITALITY * 0.8 && Math.random() < 0.001) { // Low priority path to ORDER (very old, stable, successful)
+                        const oS = cell.state; cell.setState(ECO_STATES.ORDER, vitality * 0.9);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'BOUNDARY_TO_ORDER_VERY_OLD_STABLE'}); return;
+                    }
+
+                    if (neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] > 0) {
+                        cell.vitality = Math.min(MAX_VITALITY, vitality + cfg.boundaryHealthy_vitalityGainWhenDefending);
+                        let initialVitalityForLog = cell.vitality;
+
+                        neighbors.forEach(n => {
+                            if (n.state === ECO_STATES.FLOW_EXTRACTIVE) {
+                                if (Math.random() < cfg.boundaryHealthy_effectivenessVsExtractive) {
+                                    const oldNeighborVitality = n.vitality;
+                                    n.vitality = Math.max(0, n.vitality - (5 + cell.vitality * 0.05)); 
+                                    logEvent('NEIGHBOR_VITALITY_CHANGE', { primaryCell: {x: cell.x, y: cell.y, state: STATE_NAMES[originalState]}, neighbor: {x: n.x, y: n.y, state: STATE_NAMES[n.state], oldVitality: oldNeighborVitality.toFixed(1), newVitality: n.vitality.toFixed(1)}, ruleTrigger: 'BOUNDARY_DEFENSE_DAMAGES_EXTRACTIVE'});
+                                    if (n.vitality <= 0 && n.state !== ECO_STATES.DECOMPOSING) {
+                                        const oldNeighborState = n.state;
+                                        n.setState(ECO_STATES.DECOMPOSING, 0); 
+                                         logEvent('NEIGHBOR_STATE_CHANGE', { primaryCell: {x: cell.x, y: cell.y, state: STATE_NAMES[originalState]}, neighbor: {x: n.x, y: n.y, oldState: STATE_NAMES[oldNeighborState], newState: STATE_NAMES[ECO_STATES.DECOMPOSING]}, ruleTrigger: 'BOUNDARY_DEFENSE_CAUSES_EXTRACTIVE_DECOMPOSITION' });
+                                    }
+                                }
+                                if (cell.vitality > n.vitality * cfg.boundary_vitalityAdvantage_for_neutralize && 
+                                    Math.random() < cfg.boundary_chance_neutralizeExtractiveNeighbor) { 
+                                    const drain = cfg.boundary_vitalityDrain_on_neutralized_extractive; 
+                                    const oldNeighborVitality = n.vitality;
+                                    n.vitality = Math.max(0, n.vitality - drain);
+                                    if (n.vitality < cfg.boundary_extractiveVitalityThreshold_for_neutralize_to_decompose) { // RENAMED config
+                                        const oldNeighborState = n.state;
+                                        n.setState(ECO_STATES.DECOMPOSING, 0); 
+                                        logEvent('NEIGHBOR_STATE_CHANGE', { primaryCell: {x: cell.x, y: cell.y, state: STATE_NAMES[originalState]}, neighbor: {x: n.x, y: n.y, oldState: STATE_NAMES[oldNeighborState], newState: STATE_NAMES[n.state], vitality: n.vitality.toFixed(1)}, ruleTrigger: 'BOUNDARY_NEUTRALIZES_EXTRACTIVE_TO_DECOMPOSING'});
+                                        cell.vitality = Math.min(MAX_VITALITY, cell.vitality + 1); 
+                                    } else {
+                                         logEvent('NEIGHBOR_VITALITY_CHANGE', { primaryCell: {x: cell.x, y: cell.y, state: STATE_NAMES[originalState]}, neighbor: {x: n.x, y: n.y, state: STATE_NAMES[n.state], oldVitality: oldNeighborVitality.toFixed(1), newVitality: n.vitality.toFixed(1)}, vitalityDrain: drain.toFixed(1), ruleTrigger: 'BOUNDARY_DRAINS_EXTRACTIVE_VITALITY'});
+                                    }
+                                }
+                            }
+                        });
+                         if (cell.vitality > initialVitalityForLog) {
+                            logEvent('CELL_VITALITY_CHANGE', {x:cell.x,y:cell.y,state:STATE_NAMES[originalState],oldVitality: initialVitalityForLog.toFixed(1), newVitality:cell.vitality.toFixed(1), change: (cell.vitality - initialVitalityForLog).toFixed(1), ruleTrigger:'BOUNDARY_GAINS_VITALITY_DEFENDING'});
+                        }
+                    }
+                } // --- END BOUNDARY_HEALTHY ---
+                
+                else if (cell.state === ECO_STATES.COMPOSING) {
+                    if (vitality > cfg.composing_vitality_threshold_for_order && age > cfg.composing_age_threshold_for_order && Math.random() < cfg.composing_to_order_chance) {
+                        const oS = cell.state; cell.setState(ECO_STATES.ORDER, MAX_VITALITY * 0.9);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'COMPOSING_TO_ORDER'}); return;
+                    }
+                    else if ((neighborCounts[ECO_STATES.FLOW_HARMONIOUS] > 0 || neighborCounts[ECO_STATES.SEED_ENHANCING] > 0) && vitality > MAX_VITALITY / 3 && Math.random() < cfg.composing_to_boundary_chance) {
+                        const oS = cell.state; cell.setState(ECO_STATES.BOUNDARY_HEALTHY, Math.min(MAX_VITALITY, vitality * 1.2 + MAX_VITALITY*0.2));
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'COMPOSING_TO_BOUNDARY'}); return;
+                    }
+                    else if ((neighborCounts[ECO_STATES.FLOW_EXTRACTIVE] > 0 || neighborCounts[ECO_STATES.SEED_EXTRACTIVE] > 0) && vitality > MAX_VITALITY / 4 && Math.random() < cfg.composing_to_rigid_chance) {
+                        const oS = cell.state; cell.setState(ECO_STATES.RIGID, vitality * 0.8);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'COMPOSING_TO_RIGID'}); return;
+                    }
+                    else if (neighborCounts[ECO_STATES.PATTERN_CHAOTIC] > 0 && Math.random() < cfg.chaos_breakdownComposingChance) { // RENAMED config
+                        const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 2);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'COMPOSING_BROKEN_BY_CHAOS'}); return;
+                    }
+                    else if (age > MAX_AGE / cfg.agingFactor_composingToRigid && vitality < MAX_VITALITY / 3 && Math.random() < 0.03) { // RENAMED config
+                        const oS = cell.state; cell.setState(ECO_STATES.RIGID, vitality * 0.9); 
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'COMPOSING_AGES_TO_RIGID'}); return;
+                    }
+                     else if (age > MAX_AGE * 1.5 && vitality < MAX_VITALITY / 5 && Math.random() < 0.01) {
+                        const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 2);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'COMPOSING_DECAYS_OLD_LOW_VITALITY'}); return;
+                    }
+                } // --- END COMPOSING ---
+
+                else if (cell.state === ECO_STATES.RIGID) {
+                    if (neighborCounts[ECO_STATES.PATTERN_CHAOTIC] > 1 && vitality < MAX_VITALITY / 1.5 && Math.random() < cfg.chaos_breakdownRigidChance * 1.2) {
+                        const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 2);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'RIGID_BROKEN_BY_CHAOS'}); return;
+                    }
+                    else if (neighborCounts[ECO_STATES.DECOMPOSING] > 2 && Math.random() < 0.05) {
+                        const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 2);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'RIGID_BROKEN_BY_DECOMPOSING_NEIGHBORS'}); return;
+                    }
+                    else if (age > MAX_AGE / cfg.agingFactor_rigidToDecompose && Math.random() < mapValue(cfg.decomposition_speedFactor, 0.5, 3.0, 0.001, 0.01)) { // RENAMED config
+                        const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 3);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'RIGID_DECAYS_BY_AGE'}); return;
+                    }
+                } // --- END RIGID ---
+
+                else if (cell.state === ECO_STATES.DECOMPOSING) {
+                    if (neighborCounts[ECO_STATES.DECOMPOSING] >= cfg.decomposing_neighbors_for_composing_threshold && 
+                        vitality > MAX_VITALITY / 5 && 
+                        Math.random() < cfg.decomposing_to_composing_chance) {
+                        const oS = cell.state; cell.setState(ECO_STATES.COMPOSING, Math.min(MAX_VITALITY, vitality * 0.5 + MAX_VITALITY * 0.1));
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'DECOMPOSING_TO_COMPOSING'});
+                        return;
+                    }
+                    // else if (vitality <= 0 && age > MAX_AGE / AGE_FACTOR_DECOMPOSING_TO_VOID) { // AGE_FACTOR_DECOMPOSING_TO_VOID from CA10 constant
+                    // MODIFIED BLOCK BELOW
+                    const allSlidersTrulyZero = (respect === 0 && patience === 0 && kindness === 0); 
+                    if (vitality <= 0 && (allSlidersTrulyZero || age > MAX_AGE / AGE_FACTOR_DECOMPOSING_TO_VOID)) { 
+                        const oS = cell.state; 
+                        let newVoidVitality = MAX_VITALITY / 10; 
+                        if (cell.prevState === ECO_STATES.FLOW_HARMONIOUS || cell.prevState === ECO_STATES.SEED_ENHANCING) { newVoidVitality += MAX_VITALITY / 15;}
+                        else if (cell.prevState === ECO_STATES.PATTERN_CHAOTIC) { newVoidVitality += MAX_VITALITY / 25; }
+                        cell.setState(ECO_STATES.VOID, Math.min(MAX_VITALITY, newVoidVitality));
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger: (allSlidersTrulyZero ? 'DECOMPOSING_TO_VOID_IMMEDIATE_ALL_ZERO' : 'DECOMPOSING_TO_VOID_AGED')});
+                        return; 
+                    }
+                } // --- END DECOMPOSING ---
+
+                else if (cell.state === ECO_STATES.ORDER) {
+                    if (neighborCounts[ECO_STATES.PATTERN_CHAOTIC] > 2 && vitality < MAX_VITALITY * 0.7 && Math.random() < cfg.order_breakdownByChaosChance) {
+                        const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 2);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'ORDER_BROKEN_BY_CHAOS'});
+                        return;
+                    }
+                    else if (age > cfg.order_maxAgeBeforeDecomposing && Math.random() < 0.005) {
+                        const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, vitality / 3);
+                        logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState,ruleTrigger:'ORDER_DECAYS_BY_EXTREME_AGE'});
+                        return;
+                    }
+                } // --- END ORDER ---
+
+                 if (cell.vitality <= 0 && cell.state !== ECO_STATES.VOID && cell.state !== ECO_STATES.DECOMPOSING) {
+                     if (originalState !== ECO_STATES.DECOMPOSING) {
+                          const oS = cell.state; cell.setState(ECO_STATES.DECOMPOSING, 0);
+                          logEvent('CELL_STATE_CHANGE', {x:cell.x,y:cell.y,oldState:STATE_NAMES[oS],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState, ruleTrigger:'VITALITY_DEPLETION_TO_DECOMPOSING_FALLBACK'});
+                          return; // Ensure return after this critical change
+                     }
+                 }
+                 if (cell.state !== originalState && !simulationLogs.find(log => log.x === cell.x && log.y === cell.y && log.type === 'CELL_STATE_CHANGE' && parseFloat(log.timestamp).toFixed(1) === (performance.now() - logStartTime + simulationTimeOffset).toFixed(1))) {
+                     logEvent('CELL_STATE_CHANGE', { x:cell.x,y:cell.y,oldState:STATE_NAMES[originalState],newState:STATE_NAMES[cell.state],vitality:cell.vitality.toFixed(1),age:cell.ageInState, ruleTrigger:'UNKNOWN_OR_FALLTHROUGH'});
+                 }
+            }
+
+            update() { // To be filled by AI from CA10.html
+                for (let c = 0; c < this.cols; c++) {
+                    for (let r = 0; r < this.rows; r++) {
+                        if (this.grid[c] && this.grid[c][r]) {
+                            const cell = this.grid[c][r];
+                            const neighbors = this.getNeighbors(c, r);
+                            cell.prepareUpdate(neighbors, this);
+                        }
+                    }
+                }
+            }
+
+            draw() { // To be filled by AI from CA10.html, adapted for CA11 states/colors
+                if (!this.ctx) return;
+                this.ctx.clearRect(0, 0, this.width, this.height); // More efficient clear
+                // this.ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'; // Trail effect from CA10, if desired
+                // this.ctx.fillRect(0, 0, this.width, this.height);
+                const cS = this.cellSize; 
+                const gap = cS > 5 ? 0.5 : 0.2; // Slightly smaller gap for better visibility at small sizes
+                const cW = cS - gap; 
+                const cH = cS - gap;
+
+                for (let c = 0; c < this.cols; c++) { 
+                    for (let r = 0; r < this.rows; r++) {
+                        if (!this.grid[c] || !this.grid[c][r]) continue;
+                        const cell = this.grid[c][r]; 
+                        const xP = c * cS; 
+                        const yP = r * cS;
+                        
+                        let clr = STATE_COLORS[cell.state] || 'hsla(0,0%,100%,0.1)'; // Fallback for unknown state
+
+                        if (cell.state !== ECO_STATES.VOID) {
+                            const baseColorStr = STATE_COLORS[cell.state];
+                            if (baseColorStr) { // Ensure baseColorStr is defined
+                                const parts = baseColorStr.match(/hsla\((\d+),\s*(\d+)%,\s*(\d+)%,\s*([\d\.]+)\)/i);
+                                if (parts && parts.length >= 4) {
+                                    const h = parts[1];
+                                    const s = parts[2];
+                                    let l = parseFloat(parts[3]);
+                                    let a = parts.length > 4 ? parseFloat(parts[4]) : 1; // Ensure alpha is parsed
+                                    
+                                    const vitalityFactor = (cell.vitality / MAX_VITALITY);
+                                    l = Math.max(10, Math.min(90, l * (0.7 + vitalityFactor * 0.3) + (vitalityFactor * 10 - 5) )); // Adjust lightness more dynamically
+                                    a = Math.max(0.2, Math.min(1, a * (0.5 + vitalityFactor * 0.5))); // Adjust alpha
+                                    clr = `hsla(${h},${s}%,${l}%,${a})`;
+                                }
+                            }
+                        } else { // Special handling for VOID based on its vitality (potential)
+                            const voidVitalityFactor = cell.vitality / MAX_VITALITY;
+                            const l = 7 + (voidVitalityFactor * 10); // Max 17% lightness
+                            const a = 0.6 + (voidVitalityFactor * 0.2); // Max 0.8 alpha
+                            clr = `hsla(0, 0%, ${l}%, ${a})`;
+                        }
+                        
+                        this.ctx.fillStyle = clr;
+                        this.ctx.fillRect(xP + gap / 2, yP + gap / 2, cW, cH);
+                    }
+                }
+            }
+
+            animate(timestamp) { // To be filled by AI from CA10.html
+                globalAnimationFrameId = requestAnimationFrame((ts) => this.animate(ts));
+                if (isPaused || !isTabActive) { return; }
+                const elapsed = timestamp - lastFrameTime;
+                if (elapsed >= frameInterval) {
+                     const updatesNeeded = Math.floor(elapsed / frameInterval);
+                     const updatesToRun = Math.min(updatesNeeded, MAX_UPDATES_PER_FRAME);
+                     for (let i = 0; i < updatesToRun; i++) { this.update(); }
+                     lastFrameTime += updatesToRun * frameInterval;
+                     this.draw();
+                     if (isLoggingActive) { 
+                         const cM = getSystemMetricsSnapshot(); 
+                         if (cM) { /* logEvent('SYSTEM_METRICS_SNAPSHOT', { metrics: cM }); // Can be very noisy */ } 
+                     }
+                     calculateAndDisplaySystemMetrics(timestamp);
+                 }
+            }
+        } // --- End EcoArtGridMK3 Class ---
+
+        let ecoArtGrid; 
+
+        window.addEventListener('load', initEcoArtCA);
+        window.addEventListener('load', () => { 
+            setTimeout(() => {
+                console.log("Initial liveRuleConfig (CA11.1 - Consolidated):", JSON.parse(JSON.stringify(liveRuleConfig)));
+                console.log("Initial Meta Sliders: R,P,K", safeGetElement('respectSlider')?.value, safeGetElement('patienceSlider')?.value, safeGetElement('kindnessSlider')?.value);
+            }, 1000);
+        });
+
+    </script> <!-- MAIN SCRIPT BLOCK END -->
+    <!-- JavaScript for Mobile Menu -->
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
+            document.getElementById('nav-links').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
