@@ -96,6 +96,31 @@ a:hover {
    The `strong` style will cover `<strong>[+]</strong>`.
 */
 
+/* Dark theme specific header styles */
+.site-header {
+    background-color: #0D1117 !important; /* Dark background to match body */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important; /* Darker shadow */
+    backdrop-filter: none !important; /* Remove blur for solid dark header */
+}
+
+.site-header .nav-links a {
+    color: #E6EDF3 !important; /* Light text for nav links */
+}
+
+.site-header .nav-links a:hover,
+.site-header .nav-links a.active {
+    color: #58A6FF !important; /* Accent blue for hover/active */
+}
+
+.site-header .logo .eco,
+.site-header .logo .art {
+    color: #E6EDF3 !important; /* Light text for logo */
+}
+
+.site-header .mobile-menu-toggle span {
+    background-color: #E6EDF3 !important; /* Light color for mobile menu icon */
+}
+
 /* Let's try to make the body text a bit more like a terminal, if desired.
    However, for long-form text, a clean sans-serif is usually better.
    If a more terminal-like font for body is desired, uncomment this:

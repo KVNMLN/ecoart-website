@@ -105,6 +105,11 @@ ul, ol {
     z-index: 2;
 }
 
+.site-header .container {
+    max-width: 100%;
+    padding: 0 var(--space-sm);
+}
+
 section {
     padding: var(--space-xl) 0;
     position: relative;
@@ -164,6 +169,7 @@ section {
 .nav-links {
     display: flex;
     list-style: none;
+    flex-wrap: wrap;
 }
 
 .nav-links li {
