@@ -100,6 +100,7 @@ a:hover {
 .site-header {
     background-color: #0D1117 !important; /* Dark background to match body */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important; /* Darker shadow */
+    -webkit-backdrop-filter: none !important; /* Remove blur for solid dark header - Safari */
     backdrop-filter: none !important; /* Remove blur for solid dark header */
 }
 
