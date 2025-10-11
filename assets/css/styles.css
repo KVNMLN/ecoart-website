@@ -143,10 +143,224 @@ section {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
+/* Support Heart Button */
+.support-heart-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.support-heart-btn:hover {
+    background-color: #b91c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+.heart-icon {
+    width: 18px;
+    height: 18px;
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    10%, 30% {
+        transform: scale(1.1);
+    }
+    20%, 40% {
+        transform: scale(1);
+    }
+}
+
+.support-text {
+    font-weight: 600;
+}
+
+/* Support Modal */
+.support-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.support-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.support-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+.support-modal-content {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    text-align: center;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.support-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #666;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.support-modal-close:hover {
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+.support-modal-heart {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1.5rem;
+    color: #dc2626;
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+.support-modal-heart svg {
+    width: 100%;
+    height: 100%;
+}
+
+.support-modal-content h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 1rem;
+}
+
+.support-modal-message {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+.support-modal-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.support-modal-btn {
+    display: block;
+    padding: 0.9rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.support-modal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.support-modal-btn.venmo {
+    background-color: #008CFF;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.support-modal-btn.venmo:hover {
+    background-color: #0077d9;
+}
+
+.venmo-handle {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.support-modal-btn.paypal {
+    background-color: #0070ba;
+    color: white;
+}
+
+.support-modal-btn.paypal:hover {
+    background-color: #005a94;
+}
+
+.support-modal-btn.cashapp {
+    background-color: #00d54b;
+    color: white;
+}
+
+.support-modal-btn.cashapp:hover {
+    background-color: #00b83f;
+}
+
 .main-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: var(--space-md);
 }
 
 .logo {
@@ -594,9 +808,9 @@ section {
 
 /* Site Footer */
 .site-footer {
-    background-color: var(--color-bg-tertiary);
+    background-color: #000000;
     padding: var(--space-lg) 0;
-    color: var(--color-text-primary);
+    color: #ffffff;
 }
 
 /* Support the Flow Section */
@@ -614,6 +828,10 @@ section {
     color: var(--color-primary);
     margin-bottom: var(--space-sm);
     font-size: 1.8rem;
+}
+
+.support-flow-section p {
+    color: #000000;
 }
 
 .support-grid {
@@ -642,9 +860,13 @@ section {
 }
 
 .support-card h3 {
-    color: var(--color-secondary);
+    color: #000000;
     margin-bottom: var(--space-xs);
     font-size: 1.4rem;
+}
+
+.support-card p {
+    color: #000000;
 }
 
 .support-links {
@@ -676,7 +898,7 @@ section {
 }
 
 .footer-section h3 {
-    color: white;
+    color: #ffffff;
     margin-bottom: var(--space-sm);
     font-size: 1.2rem;
 }
@@ -690,18 +912,26 @@ section {
 }
 
 .footer-section a {
-    color: #f5f5f5;
+    color: #e0e0e0;
+    text-decoration: none;
+    transition: color var(--transition-speed) ease;
 }
 
 .footer-section a:hover {
-    color: var(--color-accent);
+    color: #75b6f3;
 }
 
 .footer-bottom {
     text-align: center;
     padding-top: var(--space-md);
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255,255,255,0.2);
     font-size: 0.9rem;
+    color: #cccccc;
+}
+
+.footer-bottom p {
+    margin-bottom: var(--space-xs);
+    color: #cccccc;
 }
 
 .attribution {
@@ -711,6 +941,17 @@ section {
 
 /* Media Queries */
 @media (max-width: 768px) {
+    .support-heart-btn .support-text {
+        display: none;
+    }
+    
+    .support-heart-btn {
+        padding: 0.5rem;
+        width: 42px;
+        height: 42px;
+        justify-content: center;
+    }
+    
     .mobile-menu-toggle {
         display: flex;
     }
